@@ -10,7 +10,7 @@ class TransactionController extends Controller
 
     public function index()
     {
-        $transactions = auth()->user()->transactions()->latest()->get();
+        $transactions = auth()->user()->transactions()->latest()->paginate(10); 
 
         $totalPemasukan = auth()->user()->transactions()
                             ->where('type', 'pemasukan')

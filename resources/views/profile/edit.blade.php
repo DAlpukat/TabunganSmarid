@@ -56,7 +56,7 @@
                                         />
                                         <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
                                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                            {{ __('Upload JPG, PNG, or GIF (Max 2MB)') }}
+                                            {{ __('Upload JPG, PNG, or GIF (Max 2MB dan Foto 1:1 ya)') }}
                                         </p>
                                     </div>
                                 </div>
