@@ -345,16 +345,16 @@
             <main class="main-content">
                 <section class="content-section">
                     <div class="content-decoration"></div>
-                    <h1>Let's get started</h1>
-                    <p class="subtitle">Laravel has an incredibly rich ecosystem.<br>We suggest starting with the following.</p>
+                    <h1>MANTAP PAK WEBNYA</h1>
+                    <p class="subtitle">BUATAN KELOMPOK *DADF*<br>DIGO ABIGEL DANIEL FEYZA.</p>
                     
                     <ul class="feature-list">
                         <li class="feature-item">
                             <div class="feature-icon"></div>
                             <span class="feature-text">
-                                Read the
+                                CREDIT!
                                 <a href="https://laravel.com/docs" target="_blank" class="feature-link">
-                                    Documentation
+                                    DADF
                                     <svg class="external-icon" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001" stroke="currentColor" stroke-linecap="square"/>
                                     </svg>
@@ -364,9 +364,9 @@
                         <li class="feature-item">
                             <div class="feature-icon"></div>
                             <span class="feature-text">
-                                Watch video tutorials at
-                                <a href="https://laracasts.com" target="_blank" class="feature-link">
-                                    Laracasts
+                                TANYA TANYA DI SINI WOI
+                                <a href="https://wa.me/6285386605967" target="_blank" class="feature-link">
+                                    WA DEGO
                                     <svg class="external-icon" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001" stroke="currentColor" stroke-linecap="square"/>
                                     </svg>
@@ -376,15 +376,15 @@
                     </ul>
 
                     <div class="cta-section">
-                        <a href="https://cloud.laravel.com" target="_blank" class="btn-primary">
-                            Deploy now
+                        <a href="https:/smaridasa.com" target="_blank" class="btn-primary">
+                            SEKOLAH TERBAEK
                         </a>
                     </div>
                 </section>
 
                 <section class="logo-section">
                     <div class="logo-pattern"></div>
-                    <div class="laravel-logo">Laravel</div>
+                    <div class="laravel-logo">DEGODEGA</div>
                 </section>
             </main>
         </div>
