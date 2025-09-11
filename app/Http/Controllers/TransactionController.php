@@ -82,11 +82,50 @@ class TransactionController extends Controller
         //
     }
 
-    /**
+        /**
+         * Remove the specified resource from storage.
+         */
+        /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+        
+        // Pastikan hanya pemilik transaksi yang bisa menghapus
+        if ($transaction->user_id !== auth()->id()) {
+            if (request()->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+            abort(403);
+        }
+        
+        $transaction->delete();
+        
+        // Hitung ulang ringkasan keuangan
+        $totalPemasukan = auth()->user()->transactions()
+                            ->where('type', 'pemasukan')
+                            ->sum('amount');
+
+        $totalPengeluaran = auth()->user()->transactions()
+                            ->where('type', 'pengeluaran')
+                            ->sum('amount');
+
+        $saldo = $totalPemasukan - $totalPengeluaran;
+        
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil dihapus',
+                'newSummary' => [
+                    'totalPemasukan' => $totalPemasukan,
+                    'totalPengeluaran' => $totalPengeluaran,
+                    'saldo' => $saldo
+                ]
+            ]);
+        }
+        
+        return redirect()->route('dashboard')
+            ->with('success', 'Transaksi berhasil dihapus!');
     }
 }
