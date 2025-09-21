@@ -10,6 +10,8 @@
         .gradient-bg {
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5530 100%);
             min-height: 100vh;
+            position: relative;
+            z-index: 1; /* Pastikan di belakang modal */
         }
 
         /* Card Styles */
@@ -18,6 +20,8 @@
             border: 1px solid rgba(34, 197, 94, 0.2);
             backdrop-filter: blur(15px);
             border-radius: 16px;
+            position: relative;
+            z-index: 2;
         }
 
         .stat-card {
@@ -26,6 +30,8 @@
             backdrop-filter: blur(10px);
             border-radius: 12px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .stat-card:hover {
@@ -43,6 +49,8 @@
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            position: relative;
+            z-index: 2;
         }
 
         .btn-primary:hover {
@@ -56,6 +64,8 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: #fecaca;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .btn-delete:hover {
@@ -69,6 +79,8 @@
             border: 1px solid rgba(34, 197, 94, 0.2);
             backdrop-filter: blur(15px);
             border-radius: 16px;
+            position: relative;
+            z-index: 2;
         }
 
         .table-header {
@@ -91,6 +103,8 @@
             border: 1px solid rgba(34, 197, 94, 0.3);
             backdrop-filter: blur(10px);
             border-radius: 12px;
+            position: relative;
+            z-index: 5; /* Lebih tinggi dari konten */
         }
 
         /* Text Colors */
@@ -145,6 +159,8 @@
             border: 1px solid rgba(34, 197, 94, 0.3);
             backdrop-filter: blur(20px);
             border-radius: 16px;
+            position: relative;
+            z-index: 100; /* Sangat tinggi untuk modal */
         }
 
         /* Pattern Overlay */
@@ -155,6 +171,22 @@
             background-size: 40px 40px, 20px 20px;
             opacity: 0.3;
         }
+
+        /* Z-index fixes */
+        .z-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .z-modal {
+            position: fixed;
+            z-index: 1000;
+        }
+
+        .z-toast {
+            position: fixed;
+            z-index: 1001;
+        }
     </style>
 
     <div class="gradient-bg py-12 relative">
@@ -163,8 +195,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
             <!-- Success Notification -->
             @if(session('success'))
-                <div id="success-notification" class="success-notification mb-6 p-4 text-green-300 animate-fadeInUp relative">
-                    <button onclick="closeNotification()" class="absolute top-3 right-3 text-green-300 hover:text-green-100 text-lg font-bold">
+                <div id="success-notification" class="success-notification mb-6 p-4 text-green-300 animate-fadeInUp relative z-50">
+                    <button onclick="closeNotification('success-notification')" class="absolute top-3 right-3 text-green-300 hover:text-green-100 text-lg font-bold">
                         &times;
                     </button>
                     <div class="flex items-center">
@@ -175,7 +207,7 @@
             @endif
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 z-content">
                 <!-- Pemasukan -->
                 <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.1s">
                     <div class="flex items-center justify-between mb-4">
@@ -217,7 +249,7 @@
             </div>
 
             <!-- Tabel Transaksi -->
-            <div class="glass-card overflow-hidden animate-fadeInUp" style="animation-delay: 0.4s">
+            <div class="glass-card overflow-hidden animate-fadeInUp z-content" style="animation-delay: 0.4s">
                 <div class="p-6 text-white">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium">Riwayat Transaksi</h3>
@@ -277,46 +309,46 @@
                 </div>
             </div>
             <!-- Kotak Saran -->
-            <div class="mt-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Kotak Saran</h3>
+            <div class="mt-8 glass-card p-6 z-content">
+                <h3 class="text-lg font-medium text-[#e1d5b5] mb-4">Kotak Saran</h3>
 
                 <form action="{{ route('suggestions.store') }}" method="POST" class="space-y-4">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama (opsional)</label>
+                            <label for="name" class="block text-sm font-medium text-[#e1d5b5]">Nama (opsional)</label>
                             <input type="text" name="name" id="name" 
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm 
-                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-                                    dark:bg-gray-700 dark:text-gray-100"
+                                class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
+                                    focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
+                                    px-3 py-2"
                                 placeholder="Masukkan nama Anda">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email (opsional)</label>
+                            <label for="email" class="block text-sm font-medium text-[#e1d5b5]">Email (opsional)</label>
                             <input type="email" name="email" id="email" 
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm 
-                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-                                    dark:bg-gray-700 dark:text-gray-100"
+                                class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
+                                    focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
+                                    px-3 py-2"
                                 placeholder="Masukkan email Anda">
                         </div>
                     </div>
 
                     <div>
-                        <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Saran Anda</label>
+                        <label for="message" class="block text-sm font-medium text-[#e1d5b5]">Saran Anda</label>
                         <textarea name="message" id="message" rows="4"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm 
-                                focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-                                dark:bg-gray-700 dark:text-gray-100"
+                            class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
+                                focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
+                                px-3 py-2"
                             placeholder="Tuliskan saran Anda di sini..."></textarea>
                     </div>
 
                     <div>
                         <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md 
-                                font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 
-                                focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 
-                                focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            class="inline-flex items-center px-4 py-2 bg-[rgba(225,213,181,0.2)] border border-[rgba(225,213,181,0.3)] rounded-md 
+                                font-semibold text-xs text-[#e1d5b5] uppercase tracking-widest hover:bg-[rgba(225,213,181,0.3)] 
+                                focus:bg-[rgba(225,213,181,0.3)] active:bg-[rgba(225,213,181,0.4)] focus:outline-none focus:ring-2 
+                                focus:ring-[#e1d5b5] focus:ring-offset-2 transition ease-in-out duration-150">
                             Kirim
                         </button>
                     </div>
@@ -377,14 +409,15 @@
                             $(this).remove();
                             // Perbarui ringkasan keuangan
                             updateFinancialSummary(response.newSummary);
-                            // Tampilkan notifikasi
+                            // Tampilkan notifikasi sukses
                             showToast(response.message, 'success');
                         });
                     } else {
                         showToast('Gagal menghapus transaksi.', 'error');
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
                     showToast('Terjadi kesalahan saat menghapus transaksi.', 'error');
                 }
             });
@@ -405,23 +438,40 @@
         
         // Fungsi untuk menampilkan toast notifikasi
         function showToast(message, type = 'success') {
-            toast.removeClass('bg-red-500 bg-green-500 hidden');
-            toast.addClass(type === 'success' ? 'bg-green-500' : 'bg-red-500');
-            $('#toast-message').text(message);
+            // Hapus toast sebelumnya jika ada
+            $('.toast-message').remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `animate-slideIn p-4 rounded-lg shadow-lg flex items-center glass-effect border z-toast ${
+                type === 'success' ? 'border-green-500/30 text-green-300' : 
+                'border-red-500/30 text-red-300'
+            }`;
+            toast.innerHTML = `
+                <span class="flex-1 toast-message">${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-4 text-current hover:opacity-70 text-lg">
+                    &times;
+                </button>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
             
             // Sembunyikan otomatis setelah 3 detik
-            setTimeout(hideToast, 3000);
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 3000);
         }
 
         // Fungsi untuk menyembunyikan toast
         function hideToast() {
-            toast.addClass('hidden');
+            $('.toast-message').remove();
         }
     });
 
     // Fungsi untuk menutup notifikasi success
-    function closeNotification() {
-        const notification = document.getElementById('success-notification');
+    function closeNotification(notificationId) {
+        const notification = document.getElementById(notificationId);
         if (notification) {
             notification.style.opacity = '0';
             setTimeout(() => {
@@ -435,14 +485,14 @@
         const notification = document.getElementById('success-notification');
         if (notification) {
             setTimeout(() => {
-                closeNotification();
+                closeNotification('success-notification');
             }, 5000);
         }
     });
     </script>
 
     <!-- Modal Konfirmasi Hapus -->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center z-50 hidden">
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center z-modal hidden">
         <div class="glass-modal p-6 w-full max-w-md animate-slideIn">
             <h3 class="text-lg font-medium text-green-300 mb-4">Konfirmasi Hapus</h3>
             <p class="text-gray-300 mb-6">Apakah Anda yakin ingin menghapus transaksi ini?</p>
@@ -458,11 +508,6 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 p-4 rounded-lg shadow-lg hidden z-50 animate-slideIn">
-        <div class="flex items-center">
-            <span id="toast-message" class="text-white"></span>
-            <button onclick="hideToast()" class="ml-4 text-white">&times;</button>
-        </div>
-    </div>
+    <div id="toast-container" class="fixed top-4 right-4 z-toast space-y-3"></div>
 
 </x-app-layout>
