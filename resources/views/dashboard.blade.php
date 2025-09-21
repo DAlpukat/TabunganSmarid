@@ -280,12 +280,6 @@
             <div class="mt-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Kotak Saran</h3>
 
-                @if(session('success'))
-                    <div class="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-lg">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
                 <form action="{{ route('suggestions.store') }}" method="POST" class="space-y-4">
                     @csrf
 
