@@ -206,8 +206,8 @@
                 </div>
             @endif
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 z-content">
+           <!-- Stats Cards (ubah jadi 4 kolom) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 z-content">
                 <!-- Pemasukan -->
                 <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.1s">
                     <div class="flex items-center justify-between mb-4">
@@ -218,7 +218,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p id="total-pemasukan" class="text-2xl font-bold text-green-300">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</p>
+                    <p id="total-pemasukan" class="text-2xl font-bold text-green-300">
+                        Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
+                    </p>
                 </div>
 
                 <!-- Pengeluaran -->
@@ -231,7 +233,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p id="total-pengeluaran" class="text-2xl font-bold text-red-300">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</p>
+                    <p id="total-pengeluaran" class="text-2xl font-bold text-red-300">
+                        Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
+                    </p>
                 </div>
 
                 <!-- Saldo -->
@@ -244,7 +248,29 @@
                             </svg>
                         </div>
                     </div>
-                    <p id="saldo" class="text-2xl font-bold text-blue-300">Rp {{ number_format($saldo, 0, ',', '.') }}</p>
+                    <p id="saldo" class="text-2xl font-bold {{ $saldo >= 0 ? 'text-blue-300' : 'text-red-300' }}">
+                        Rp {{ number_format($saldo + $totalUtang, 0, ',', '.') }}
+                        @if($totalUtang > 0)
+                            <span class="text-red-400 font-semibold" style="opacity:0.85;">
+                                ({{ number_format(-$totalUtang, 0, ',', '.') }})
+                            </span>
+                        @endif
+                    </p>
+                </div>
+
+                <!-- Total Utang -->
+                <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.35s">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium">Total Utang</h3>
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p id="total-utang" class="text-2xl font-bold text-red-300">
+                        Rp {{ number_format($totalUtang, 0, ',', '.') }}
+                    </p>
                 </div>
             </div>
 
@@ -427,6 +453,7 @@
         function updateFinancialSummary(summary) {
             $('#total-pemasukan').text('Rp ' + formatNumber(summary.totalPemasukan));
             $('#total-pengeluaran').text('Rp ' + formatNumber(summary.totalPengeluaran));
+            $('#total-utang').text('Rp ' + formatNumber(summary.totalUtang)); // <-- TAMBAHKAN
             $('#saldo').text('Rp ' + formatNumber(summary.saldo));
         }
 

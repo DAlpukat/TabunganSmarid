@@ -17,6 +17,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function debts()
+    {
+        return $this->hasMany(Debt::class);
+    }
     
     
     /** @use HasFactory<\Database\Factories\UserFactory> */

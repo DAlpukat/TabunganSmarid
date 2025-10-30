@@ -16,6 +16,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
+                        {{ __('Hutang') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -92,6 +95,10 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#e1d5b5] hover:text-[#d2c39a]">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a]">
+                {{ __('Hutang') }}
+            </x-responsive-nav-link>
+
         </div>
 
         <!-- Responsive Settings Options -->
