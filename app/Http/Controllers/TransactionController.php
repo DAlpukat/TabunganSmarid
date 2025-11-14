@@ -5,11 +5,29 @@ use App\Models\Debt;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
+
+
+
 class TransactionController extends Controller
 {
+    protected $streakController;
+
+    // Gunakan dependency injection untuk StreakController
+    public function __construct(StreakController $streakController)
+    {
+        $this->streakController = $streakController;
+    }
+
+    // ... method index() dan create() ...
+
+    
 
     public function index()
     {
+        // --- CEK & RESET STREAK SAAT DASHBOARD DIBUKA ---
+        $this->streakController->checkAndResetStreak();
+
+        // --- AMBIL DATA UNTUK DASHBOARD ---
         $transactions = auth()->user()->transactions()->latest()->paginate(10); 
         
         $totalPemasukan = auth()->user()->transactions()
@@ -24,6 +42,7 @@ class TransactionController extends Controller
         $totalUtang = auth()->user()->debts()->where('is_paid', false)->sum('amount');
         $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
 
+        // KEMBALIKAN KE VIEW DASHBOARD (TANPA $hasIncomeToday)
         return view('dashboard', compact(
             'transactions',
             'totalPemasukan',
@@ -41,21 +60,19 @@ class TransactionController extends Controller
         return view('transactions.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-   public function store(Request $request)
+    public function store(Request $request)
     {
-        // PERBAIKAN: Ganti "utang" menjadi "hutang"
+        // Validasi data
         $validated = $request->validate([
-            'type' => 'required|in:pemasukan,pengeluaran,hutang', // <-- "hutang"
+            'type' => 'required|in:pemasukan,pengeluaran,hutang',
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'description' => 'nullable|string|max:255'
         ]);
 
+        // Logika penyimpanan transaksi/hutang
         if ($validated['type'] === 'hutang') {
-            // Simpan ke debts
+            // Simpan ke tabel debts
             auth()->user()->debts()->create([
                 'creditor' => $validated['description'] ?? 'Tidak disebutkan',
                 'amount' => $validated['amount'],
@@ -65,9 +82,18 @@ class TransactionController extends Controller
             // Simpan juga ke transactions agar tampil di riwayat
             auth()->user()->transactions()->create($validated);
         } else {
+            // Simpan ke tabel transactions untuk pemasukan dan pengeluaran biasa
             auth()->user()->transactions()->create($validated);
         }
 
+        // --- LOGIKA UNTUK MENAMBAH STREAK ---
+        // Cek apakah transaksi yang baru dibuat adalah "pemasukan"
+        if ($validated['type'] === 'pemasukan') {
+            // Panggil method dari StreakController untuk memperbarui streak
+            $this->streakController->updateStreakOnIncome();
+        }
+
+        // Redirect ke dashboard dengan pesan sukses
         return redirect()->route('dashboard')
             ->with('success', 'Transaksi berhasil ditambahkan!');
     }

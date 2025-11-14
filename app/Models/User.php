@@ -12,6 +12,11 @@ class User extends Authenticatable
     
     use HasFactory;
 
+    public function streak()
+    {
+        return $this->hasOne(Streak::class);
+    }
+
     // Add this relationship method
     public function transactions()
     {

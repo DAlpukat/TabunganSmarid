@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'DEGODEGA - Financial Tracker') }}</title>
+        <title>DEGODEGA - Financial Tracker</title>
 
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -23,6 +23,22 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
+
+            /* --- Streak Animation (Hanya saat aktif) --- */
+            .flame-active {
+                animation: flicker 1.5s infinite alternate;
+                filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.7));
+            }
+
+            @keyframes flicker {
+                from {
+                    filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.7));
+                }
+                to {
+                    filter: drop-shadow(0 0 15px rgba(251, 146, 60, 0.9));
+                }
+            }
+
             /* Global Styles */
             * {
                 margin: 0;
@@ -316,6 +332,54 @@
         <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-3"></div>
 
         <script>
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                const streakCountElement = document.getElementById('streakCount');
+                const streakCountMobileElement = document.getElementById('streakCountMobile'); // Untuk mobile
+
+                /**
+                 * Fungsi untuk menganimasikan angka dari start ke end.
+                 */
+                function animateValue(element, start, end, duration) {
+                    if (start === end) return; // Tidak perlu animasi jika sama
+                    let startTimestamp = null;
+                    const step = (timestamp) => {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        const currentValue = Math.floor(progress * (end - start) + start);
+                        element.textContent = currentValue;
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                }
+
+                /**
+                 * Fungsi untuk memulai animasi streak.
+                 */
+                function runStreakAnimation() {
+                    if (!streakCountElement) return;
+
+                    const currentStreak = parseInt(streakCountElement.textContent, 10) || 0;
+                    const previousStreak = parseInt(localStorage.getItem('previousStreak') || '0', 10);
+
+                    // Jika streak bertambah, jalankan animasi
+                    if (currentStreak > previousStreak) {
+                        animateValue(streakCountElement, previousStreak, currentStreak, 1200); // 1.2 detik
+                        if (streakCountMobileElement) {
+                            animateValue(streakCountMobileElement, previousStreak, currentStreak, 1200);
+                        }
+                    }
+
+                    // Simpan streak saat ini untuk perbandingan di kunjungan berikutnya
+                    localStorage.setItem('previousStreak', currentStreak.toString());
+                }
+
+                // Jalankan animasi saat halaman dimuat
+                runStreakAnimation();
+            });
+
             // Enhanced loading management
             document.addEventListener('DOMContentLoaded', function() {
                 // Hide loading indicator

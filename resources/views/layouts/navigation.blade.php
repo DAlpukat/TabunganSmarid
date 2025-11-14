@@ -16,14 +16,21 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
+                        {{ __('Transaksi') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Hutang') }}
                     </x-nav-link>
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Settings Dropdown & Streak (Desktop) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Streak Display (Desktop) -->
+                <x-streak-icon />
+
+                <!-- Profile Dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[#e1d5b5] bg-transparent hover:text-[#d2c39a] focus:outline-none transition ease-in-out duration-150 glass-effect">
@@ -48,6 +55,7 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <!-- Dropdown content remains the same -->
                         <div class="px-4 py-2 border-b border-[rgba(225,213,181,0.2)]">
                             <div class="font-medium text-[#e1d5b5]">{{ Auth::user()->name }}</div>
                             <div class="text-xs text-[#d2c39a]">{{ Auth::user()->email }}</div>
@@ -95,10 +103,12 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#e1d5b5] hover:text-[#d2c39a]">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index')" class="text-[#e1d5b5] hover:text-[#d2c39a]">
+                {{ __('Transaksi') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a]">
                 {{ __('Hutang') }}
             </x-responsive-nav-link>
-
         </div>
 
         <!-- Responsive Settings Options -->
@@ -112,9 +122,12 @@
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
-                <div>
+                <div class="flex-grow">
                     <div class="font-medium text-base text-[#e1d5b5]">{{ Auth::user()->name }}</div>
                     <div class="font-medium text-sm text-[#d2c39a]">{{ Auth::user()->email }}</div>
+                    <!-- ... di dalam bagian responsive navigation ... -->
+                    <!-- apiapi -->
+                    <x-streak-icon class="mt-1" size="6" textClass="text-sm" id="Mobile" />
                 </div>
             </div>
 
