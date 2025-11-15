@@ -25,6 +25,7 @@ C:.
 ¦   ¦   ¦   ¦   Controller.php
 ¦   ¦   ¦   ¦   DebtController.php
 ¦   ¦   ¦   ¦   ProfileController.php
+¦   ¦   ¦   ¦   StreakController.php
 ¦   ¦   ¦   ¦   SuggestionController.php
 ¦   ¦   ¦   ¦   TransactionController.php
 ¦   ¦   ¦   ¦   
@@ -39,7 +40,6 @@ C:.
 ¦   ¦   ¦           RegisteredUserController.php
 ¦   ¦   ¦           VerifyEmailController.php
 ¦   ¦   ¦           
-¦   ¦   +---Middleware
 ¦   ¦   +---Requests
 ¦   ¦       ¦   ProfileUpdateRequest.php
 ¦   ¦       ¦   
@@ -51,6 +51,7 @@ C:.
 ¦   ¦       
 ¦   +---Models
 ¦   ¦       Debt.php
+¦   ¦       Streak.php
 ¦   ¦       Transaction.php
 ¦   ¦       User.php
 ¦   ¦       
@@ -61,6 +62,7 @@ C:.
 ¦       +---Components
 ¦               AppLayout.php
 ¦               GuestLayout.php
+¦               StreakIcon.php
 ¦               
 +---bootstrap
 ¦   ¦   app.php
@@ -96,6 +98,7 @@ C:.
 ¦   ¦       2025_07_27_105020_create_transactions_table.php
 ¦   ¦       2025_07_28_112636_add_avatar_to_users_table.php
 ¦   ¦       2025_10_09_100333_create_debts_table.php
+¦   ¦       2025_11_14_120527_create_streaks_table.php
 ¦   ¦       
 ¦   +---seeders
 ¦           DatabaseSeeder.php
@@ -119,6 +122,12 @@ C:.
 ¦   +---storage
 ¦       ¦   .gitignore
 ¦       ¦   
+¦       +---announcements
+¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
+¦       ¦   ¦   
+¦       ¦   +---blocks
+¦       ¦           TreyRKfQxblYjsNtSFP0fbVqyZZT8zqltkLqzgxb.jpg
+¦       ¦           
 ¦       +---avatars
 ¦               G8GTTD10Mf1TS6qRCU9dYTd2ZDQJlp32c5wRvnkw.jpg
 ¦               gcCS63LpY4WtHpqc97bcS42T8B2MlY4FXlQqzake.jpg
@@ -157,6 +166,7 @@ C:.
 ¦       ¦       primary-button.blade.php
 ¦       ¦       responsive-nav-link.blade.php
 ¦       ¦       secondary-button.blade.php
+¦       ¦       streak-icon.blade.php
 ¦       ¦       text-input.blade.php
 ¦       ¦       
 ¦       +---debts
@@ -197,6 +207,12 @@ C:.
     ¦   +---public
     ¦       ¦   .gitignore
     ¦       ¦   
+    ¦       +---announcements
+    ¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
+    ¦       ¦   ¦   
+    ¦       ¦   +---blocks
+    ¦       ¦           TreyRKfQxblYjsNtSFP0fbVqyZZT8zqltkLqzgxb.jpg
+    ¦       ¦           
     ¦       +---avatars
     ¦               G8GTTD10Mf1TS6qRCU9dYTd2ZDQJlp32c5wRvnkw.jpg
     ¦               gcCS63LpY4WtHpqc97bcS42T8B2MlY4FXlQqzake.jpg
@@ -219,70 +235,37 @@ C:.
     ¦   ¦       
     ¦   +---views
     ¦           .gitignore
-    ¦           0001f2ac86ce829ba4ba6c63a800a085.php
-    ¦           06ffa73e47378d5e17ff69795aff0dcc.php
-    ¦           0fce0b99059da29a0908d10b9e6c4c62.php
     ¦           1fe82842a5d814897ddefa9c485f42f4.php
     ¦           239b157f0acb9eede1e6a9433e6624e8.php
     ¦           28bb1c3f9a350c5902da516482566618.php
+    ¦           2caf368072471c37f677c098fa32cfa4.php
     ¦           360095dcf8a1924db500c2bb0e604c5e.php
     ¦           364092a312d13a6241826cb0cdbce029.php
     ¦           3ca0fc8393852b96f86db87584bc295e.php
     ¦           429923bf37ff246c38eb9bb0643322bb.php
-    ¦           4abaa0cb8ba110529108ce7e660299c7.php
+    ¦           4c5f1bba1e1044052d9d6c6ec9947bb2.php
     ¦           4deb3c5d73f26f9a9fee065ab20cbfdb.php
     ¦           4fb959c8c5d1b6943df0ce8390414d25.php
-    ¦           4fc3bd66e1ea35c994aca792dc3014e2.php
-    ¦           50242b27a7219766616ec4389107e3d4.php
     ¦           5027a471ffb85b747fdc27fcb94aea16.php
-    ¦           55bcc1564bd67b3fc9ba2ebbdea3e9f3.php
     ¦           560710b83821dbdcf965976261e4818e.php
-    ¦           5c13ce88f8ae340d05da05b412b19591.php
     ¦           5d28859dd063c84e92c04f7122b9b299.php
-    ¦           5dd580bc95c7cdd9cb9ecfd19a5eb23f.php
     ¦           651e3dd6c8b7d532f77e4ba846f8a563.php
-    ¦           665f1c39f69425b9eb51227dd30a2fc5.php
-    ¦           68200de5af790bce2679066b97616884.php
     ¦           68e73e0a15cadf9b72b7b6572cfc3a7c.php
-    ¦           71182ebb12b677fce8724ff2383a7359.php
-    ¦           759b64cbb200ad29909cf0ead1aae5e3.php
     ¦           780f38b284523931d0fe109880ded599.php
     ¦           798428efd94ed4d6b99f5b38ea24f742.php
+    ¦           7a6793c1d149f178189a517947bb696a.php
     ¦           7abf6dbe4ed4cc1d2a2f8a40e0af852d.php
-    ¦           7d6e4de8214ec20df2734b2ba78cbb5a.php
-    ¦           7ecc9ac5a411b82f3accafa68c25a713.php
-    ¦           81eac8fb9303099b336df04434652e86.php
-    ¦           859d2106c45518cd11316a509f56ad5e.php
-    ¦           8a113ca5f94b1100f004a236a8f427b1.php
+    ¦           88d7583cf4cd37c58a7801e698c50c6b.php
     ¦           8ca33fe70058733b3c9ad21ff366366c.php
     ¦           94796c320c02f01a2208cfd56997935f.php
-    ¦           951056012bcb2fa5f79c45042eed8ffc.php
-    ¦           97fa63c209ee0b044e78f1fd9eb34542.php
     ¦           9bafb639349deca930d311404f7fa27d.php
     ¦           a327560174335e8762985dde1818034a.php
-    ¦           a98ab598b4c472d909ece50e86424b9a.php
     ¦           a99f3781d01faccdd0a1b609f7203ec1.php
-    ¦           a9bc700f31b18d81547a91171704279c.php
-    ¦           aa446fd2fb762d333b3e31f634355fe6.php
     ¦           ac039e10d10a936b4b507eea013e5471.php
-    ¦           b09c24082a4ab92938e0fd0a35d9239b.php
-    ¦           b12a980a239ac741d021acb9daa5a832.php
-    ¦           b37bb2a22c11a76ff1fe5a62602c9bdc.php
-    ¦           b6a3ddf2a70a6d7a23667ca09a982cb7.php
-    ¦           b8967201f0996084db9dca45e2c5e277.php
     ¦           bf2a9546c286a63191ab64e024638ad6.php
-    ¦           bfca8e61dc52967fd5ac977158040c9e.php
-    ¦           c6b38f346b65453f78b2e9c5a34e25e9.php
     ¦           cd71301e0fc1ac0572fe787dd98c257f.php
-    ¦           d05789d741dd505452268835863e947d.php
-    ¦           d0f3a5557f3f9397a6d5ea253d741573.php
-    ¦           d16fe8d33165dead9eeb1488cdcc06a2.php
-    ¦           d56ec3f6779764b6f51e3b6d7fa2dba2.php
-    ¦           d5e26c6a2fd59ef1c1b8576d1ad53190.php
     ¦           d7d242cce162a61666f8172f6c99e6ff.php
     ¦           daf1a4ca65c80b249ac2ad4d1ad1641f.php
-    ¦           e8d36364df05ba0440e2e3c1392ccaa4.php
-    ¦           e8daf26377cc199dc7e9b8345aa385db.php
     ¦           ea8a2ef848652c439dc255cbc0df2148.php
     ¦           fe40456626d9a65ef322849f3e7acf9f.php
     ¦           

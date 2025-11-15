@@ -6,6 +6,7 @@ use App\Http\Controllers\StreakController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,28 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
+
+
+
+
+    // --- Route untuk User Biasa (Lihat Berita) ---
+    // Route ini TIDAK punya middleware, jadi semua orang bisa akses
+    Route::get('/berita', [AnnouncementController::class, 'publicIndex'])->name('announcements.public.index');
+    Route::get('/berita/{announcement}', [AnnouncementController::class, 'show'])->name('announcements.public.show');
+
+    // --- Route untuk Admin (Kelola Berita) ---
+    // Route ini DILINDUNGI oleh middleware 'auth' dan 'admin'
+    Route::prefix('admin/berita')->name('announcements.')->middleware(['auth', 'admin'])->group(function () {
+        Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+        Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
+        Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+        Route::get('/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+        Route::put('/{announcement}', [AnnouncementController::class, 'update'])->name('update');
+        Route::delete('/{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
+    });
+
+
+
 
     /*
     |---------------------------------

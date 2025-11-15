@@ -22,6 +22,10 @@
                     <x-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Hutang') }}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('announcements.public.index') }}" :active="request()->routeIs('announcements.public.index')">
+                        {{ __('Berita') }}
+                    </x-nav-link>
+
                 </div>
             </div>
 
@@ -61,6 +65,14 @@
                             <div class="text-xs text-[#d2c39a]">{{ Auth::user()->email }}</div>
                         </div>
                         
+                        @if (auth()->user() && auth()->user()->is_admin)
+                            <!-- Management -->
+                            <x-dropdown-link href="{{ route('announcements.index') }}">
+                                {{ __('Kelola Berita') }}
+                            </x-dropdown-link>
+                        @endif
+
+
                         <x-dropdown-link :href="route('profile.edit')" class="flex items-center text-[#e1d5b5] hover:bg-[rgba(225,213,181,0.1)]">
                             <svg class="w-4 h-4 mr-2 text-[#e1d5b5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
