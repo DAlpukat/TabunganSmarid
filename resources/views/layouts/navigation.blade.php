@@ -16,9 +16,6 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
-                        {{ __('Transaksi') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Hutang') }}
                     </x-nav-link>

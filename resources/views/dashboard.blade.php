@@ -335,7 +335,7 @@
                 </div>
             </div>
             <!-- Kotak Saran -->
-            <div class="mt-8 glass-card p-6 z-content">
+            <div class="mt-8 glass-card p-6 animate-fadeInUp z-content " style="animation-delay: 0.5s">
                 <h3 class="text-lg font-medium text-[#e1d5b5] mb-4">Kotak Saran</h3>
 
                 <form action="{{ route('suggestions.store') }}" method="POST" class="space-y-4">
