@@ -26,7 +26,23 @@ require __DIR__.'/auth.php';
 */
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES – Kelola User & Berita
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
+        // === Kelola Pengguna (Hapus User) ===
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('index');
+            Route::delete('/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy');
+        });
+
+        // === Kelola Berita (sudah ada sebelumnya, saya rapikan saja) ===
+        Route::resource('announcements', App\Http\Controllers\AnnouncementController::class)
+            ->except(['show', 'publicIndex', 'publicShow']);
+    });
 
 
     // --- Route untuk User Biasa (Lihat Berita) ---

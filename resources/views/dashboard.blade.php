@@ -206,7 +206,7 @@
                 </div>
             @endif
 
-           <!-- Stats Cards (ubah jadi 4 kolom) -->
+           <!-- Stats Cards (disini kita pake 4 kolom hahay) -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 z-content">
                 <!-- Pemasukan -->
                 <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.1s">
@@ -272,6 +272,66 @@
                         Rp {{ number_format($totalUtang, 0, ',', '.') }}
                     </p>
                 </div>
+            </div>
+
+            
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Bar Chart: Pemasukan vs Pengeluaran -->
+                <div class="glass-card p-6 lg:col-span-2">
+                    <h3 class="text-lg font-semibold text-green-300 mb-4">Pemasukan vs Pengeluaran (6 Bulan Terakhir)</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+
+                <!-- Pie Chart: Komposisi Keuangan -->
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-semibold text-green-300 mb-4">Komposisi Keuangan</h3>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Line Chart: Trend Saldo -->
+            <div class="glass-card p-6 mb-8">
+                <h3 class="text-lg font-semibold text-green-300 mb-4">Trend Saldo (6 Bulan Terakhir)</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+
+
+            <!-- Form Filter + Search + Sort -->
+            <div class="glass-card p-6 mb-6 animate-fadeInUp"  style="animation-delay: 0.35s">
+                <form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <input type="text" name="search" value="{{ request('search') }}" 
+                            placeholder="Cari deskripsi..." 
+                            class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white placeholder-gray-400 focus:border-green-400 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <select name="type" class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white focus:border-green-400 focus:outline-none">
+                            <option value="">Semua Tipe</option>
+                            <option value="pemasukan" {{ request('type') == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
+                            <option value="pengeluaran" {{ request('type') == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select name="sort_by" class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white focus:border-green-400 focus:outline-none">
+                            <option value="date" {{ request('sort_by') == 'date' ? 'selected' : '' }}>Tanggal</option>
+                            <option value="amount" {{ request('sort_by') == 'amount' ? 'selected' : '' }}>Jumlah</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-lg font-medium hover:from-green-500 hover:to-emerald-400 transition">
+                            Terapkan Filter
+                        </button>
+                        @if(request()->hasAny(['search', 'type', 'sort_by']))
+                            <a href="{{ route('dashboard') }}" class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
             </div>
 
             <!-- Tabel Transaksi -->
@@ -536,5 +596,86 @@
 
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed top-4 right-4 z-toast space-y-3"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: @json($months),
+                datasets: [
+                    {
+                        label: 'Pemasukan',
+                        data: @json($pemasukanData),
+                        backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                        borderColor: '#22c55e',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Pengeluaran',
+                        data: @json($pengeluaranData),
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: '#ef4444',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#e1d5b5' } } },
+                scales: {
+                    y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } },
+                    x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } }
+                }
+            }
+        });
+
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: @json($months),
+                datasets: [{
+                    label: 'Saldo',
+                    data: @json($saldoData),
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#e1d5b5' } } },
+                scales: {
+                    y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } },
+                    x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } }
+                }
+            }
+        });
+
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pemasukan Total', 'Pengeluaran Total', 'Utang Belum Lunas'],
+                datasets: [{
+                    data: [{{ $totalPemasukan }}, {{ $totalPengeluaran }}, {{ $totalUtang }}],
+                    backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
+                    borderWidth: 2,
+                    borderColor: '#1a3a32'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { color: '#e1d5b5' } } }
+            }
+        });
+    });
+    </script>
+
+
+
 
 </x-app-layout>

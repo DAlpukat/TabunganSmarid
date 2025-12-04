@@ -10,6 +10,10 @@
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" />
@@ -250,6 +254,7 @@
         <!-- Additional CSS for specific pages -->
         @stack('styles')
     </head>
+
     <body class="min-h-screen">
         <!-- Floating Particles -->
         <div class="floating-particles">

@@ -1,60 +1,97 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Debt;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-
-
-
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
     protected $streakController;
 
-    // Gunakan dependency injection untuk StreakController
     public function __construct(StreakController $streakController)
     {
         $this->streakController = $streakController;
     }
 
-    // ... method index() dan create() ...
-
-    
-
     public function index()
     {
-        // --- CEK & RESET STREAK SAAT DASHBOARD DIBUKA ---
         $this->streakController->checkAndResetStreak();
 
-        // --- AMBIL DATA UNTUK DASHBOARD ---
-        $transactions = auth()->user()->transactions()->latest()->paginate(10); 
-        
-        $totalPemasukan = auth()->user()->transactions()
-                            ->where('type', 'pemasukan')
-                            ->sum('amount');
-        
-        $totalPengeluaran = auth()->user()->transactions()
-                            ->where('type', 'pengeluaran')
-                            ->sum('amount');
-        
-        // AMBIL DARI TABEL DEBTS YANG BELUM LUNAS
-        $totalUtang = auth()->user()->debts()->where('is_paid', false)->sum('amount');
+        // === DATA UNTUK CHART (6 BULAN TERAKHIR) ===
+        $months = [];
+        $pemasukanData = [];
+        $pengeluaranData = [];
+        $saldoData = [];
+        $currentSaldo = 0;
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->startOfMonth()->subMonths($i);
+            $months[] = $date->translatedFormat('M Y');
+
+            $masuk = auth()->user()->transactions()
+                ->where('type', 'pemasukan')
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->sum('amount');
+
+            $keluar = auth()->user()->transactions()
+                ->where('type', 'pengeluaran')
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->sum('amount');
+
+            $currentSaldo = $currentSaldo + $masuk - $keluar;
+
+            $pemasukanData[] = $masuk;
+            $pengeluaranData[] = $keluar;
+            $saldoData[] = $currentSaldo;
+        }
+
+        // === DATA PIE CHART (TOTAL KESELURUHAN) ===
+        $totalPemasukan   = auth()->user()->transactions()->where('type', 'pemasukan')->sum('amount');
+        $totalPengeluaran = auth()->user()->transactions()->where('type', 'pengeluaran')->sum('amount');
+        $totalUtang       = auth()->user()->debts()->where('is_paid', false)->sum('amount');
+
+        // === QUERY TRANSAKSI UNTUK TABEL (sama seperti sebelumnya) ===
+        $query = auth()->user()->transactions()->latest();
+
+        if ($search = request('search')) {
+            $query->where('description', 'like', '%' . $search . '%');
+        }
+        if ($type = request('type')) {
+            $query->where('type', $type);
+        }
+
+        $sortBy = request('sort_by', 'date');
+        $order  = request('order', 'desc');
+        if (!in_array($sortBy, ['date', 'amount', 'created_at'])) $sortBy = 'date';
+        if (!in_array($order, ['asc', 'desc'])) $order = 'desc';
+
+        $query->orderBy($sortBy, $order);
+
+        $transactions = $query->paginate(15)->appends(request()->query());
+
         $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
 
-        // KEMBALIKAN KE VIEW DASHBOARD (TANPA $hasIncomeToday)
         return view('dashboard', compact(
             'transactions',
             'totalPemasukan',
             'totalPengeluaran',
             'saldo',
+            'totalUtang',
+            'months',
+            'pemasukanData',
+            'pengeluaranData',
+            'saldoData',
+            'totalPemasukan',
+            'totalPengeluaran',
             'totalUtang'
         ));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('transactions.create');
@@ -62,129 +99,70 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data
         $validated = $request->validate([
-            'type' => 'required|in:pemasukan,pengeluaran,hutang',
-            'amount' => 'required|numeric|min:0',
-            'date' => 'required|date',
+            'type'        => 'required|in:pemasukan,pengeluaran,hutang',
+            'amount'      => 'required|numeric|min:0',
+            'date'        => 'required|date',
             'description' => 'nullable|string|max:255'
         ]);
 
-        // Logika penyimpanan transaksi/hutang
+        // Jika hutang → simpan ke debts + transactions
         if ($validated['type'] === 'hutang') {
-            // Simpan ke tabel debts
-            auth()->user()->debts()->create([
-                'creditor' => $validated['description'] ?? 'Tidak disebutkan',
-                'amount' => $validated['amount'],
+            Auth::user()->debts()->create([
+                'creditor'    => $validated['description'] ?? 'Hutang',
+                'amount'      => $validated['amount'],
                 'description' => $validated['description'],
-                'due_date' => $validated['date']
+                'due_date'    => $validated['date'],
+                'is_paid'     => false,
             ]);
-            // Simpan juga ke transactions agar tampil di riwayat
-            auth()->user()->transactions()->create($validated);
-        } else {
-            // Simpan ke tabel transactions untuk pemasukan dan pengeluaran biasa
-            auth()->user()->transactions()->create($validated);
         }
 
-        // --- LOGIKA UNTUK MENAMBAH STREAK ---
-        // Cek apakah transaksi yang baru dibuat adalah "pemasukan"
+        // Simpan transaksi (termasuk hutang juga masuk riwayat)
+        $transaction = Auth::user()->transactions()->create($validated);
+
+        // Update streak hanya jika pemasukan
         if ($validated['type'] === 'pemasukan') {
-            // Panggil method dari StreakController untuk memperbarui streak
             $this->streakController->updateStreakOnIncome();
         }
 
-        // Redirect ke dashboard dengan pesan sukses
         return redirect()->route('dashboard')
             ->with('success', 'Transaksi berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $transaction = Transaction::where('user_id', Auth::id())->find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-        /**
-         * Remove the specified resource from storage.
-         */
-        /**
-     * Remove the specified resource from storage.
-     */
-   public function destroy(string $id)
-{
-    // Coba cari di transactions dulu
-    $transaction = Transaction::find($id);
-    $debt = null;
-
-    if (!$transaction) {
-        // Jika tidak ada di transactions, coba di debts
-        $debt = Debt::find($id);
-        if (!$debt || $debt->user_id !== auth()->id()) {
-            if (request()->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau tidak diizinkan'], 403);
+        // Jika transaksi tidak ditemukan di transactions, cek di debts
+        if (!$transaction) {
+            $debt = Debt::where('user_id', Auth::id())->find($id);
+            if (!$debt) {
+                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
             }
-            abort(403);
+            $debt->delete();
+        } else {
+            $transaction->delete();
         }
-        $debt->delete();
-    } else {
-        // Validasi kepemilikan transaksi
-        if ($transaction->user_id !== auth()->id()) {
-            if (request()->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau tidak diizinkan'], 403);
-            }
-            abort(403);
+
+        // Hitung ulang saldo setelah hapus
+        $totalPemasukan   = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
+        $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
+        $totalUtang       = Auth::user()->debts()->where('is_paid', false)->sum('amount');
+        $saldo            = $totalPemasukan - $totalPengeluaran - $totalUtang;
+
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil dihapus',
+                'newSummary' => [
+                    'totalPemasukan'   => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
+                    'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),
+                    'totalUtang'       => 'Rp ' . number_format($totalUtang, 0, ',', '.'),
+                    'saldo'            => 'Rp ' . number_format($saldo, 0, ',', '.'),
+                ]
+            ]);
         }
-        $transaction->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Transaksi berhasil dihapus!');
     }
-
-    // Hitung ulang semua ringkasan keuangan (termasuk utang)
-    $totalPemasukan = auth()->user()->transactions()
-                        ->where('type', 'pemasukan')
-                        ->sum('amount');
-
-    $totalPengeluaran = auth()->user()->transactions()
-                        ->where('type', 'pengeluaran')
-                        ->sum('amount');
-
-    $totalUtang = auth()->user()->debts()
-                    ->where('is_paid', false)
-                    ->sum('amount');
-
-    $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
-
-    if (request()->ajax()) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Data berhasil dihapus',
-            'newSummary' => [
-                'totalPemasukan' => $totalPemasukan,
-                'totalPengeluaran' => $totalPengeluaran,
-                'totalUtang' => $totalUtang, // <-- TAMBAHKAN
-                'saldo' => $saldo
-            ]
-        ]);
-    }
-
-    return redirect()->route('dashboard')
-        ->with('success', 'Data berhasil dihapus!');
-
-}
 }

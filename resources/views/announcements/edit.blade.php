@@ -251,6 +251,17 @@
                 }
             });
 
+            tinymce.remove(); // Hapus semua instance lama
+            tinymce.init({
+                setup: function (editor) {
+                    window.editor = editor;
+                    
+                    editor.on('init', function () {
+                        editor.setContent({!! json_encode($announcement->content) !!});
+                    });
+                }
+            });
+
             document.addEventListener('DOMContentLoaded', function() {
                 const form = document.querySelector('form');
 

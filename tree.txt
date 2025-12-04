@@ -1,12 +1,10 @@
-Folder PATH listing for volume OS
-Volume serial number is 7C36-DFB3
+
 C:.
 ¦   .editorconfig
 ¦   .env
 ¦   .env.example
 ¦   .gitattributes
 ¦   .gitignore
-¦   abcdtree.txt
 ¦   artisan
 ¦   composer.json
 ¦   composer.lock
@@ -17,11 +15,13 @@ C:.
 ¦   README.md
 ¦   readme.txt
 ¦   tailwind.config.js
+¦   tree.txt
 ¦   vite.config.js
 ¦   
 +---app
 ¦   +---Http
 ¦   ¦   +---Controllers
+¦   ¦   ¦   ¦   AnnouncementController.php
 ¦   ¦   ¦   ¦   Controller.php
 ¦   ¦   ¦   ¦   DebtController.php
 ¦   ¦   ¦   ¦   ProfileController.php
@@ -40,6 +40,9 @@ C:.
 ¦   ¦   ¦           RegisteredUserController.php
 ¦   ¦   ¦           VerifyEmailController.php
 ¦   ¦   ¦           
+¦   ¦   +---Middleware
+¦   ¦   ¦       AdminMiddleware.php
+¦   ¦   ¦       
 ¦   ¦   +---Requests
 ¦   ¦       ¦   ProfileUpdateRequest.php
 ¦   ¦       ¦   
@@ -50,6 +53,7 @@ C:.
 ¦   ¦       SuggestionMail.php
 ¦   ¦       
 ¦   +---Models
+¦   ¦       Announcement.php
 ¦   ¦       Debt.php
 ¦   ¦       Streak.php
 ¦   ¦       Transaction.php
@@ -99,8 +103,10 @@ C:.
 ¦   ¦       2025_07_28_112636_add_avatar_to_users_table.php
 ¦   ¦       2025_10_09_100333_create_debts_table.php
 ¦   ¦       2025_11_14_120527_create_streaks_table.php
+¦   ¦       2025_11_15_055052_create_announcements_table.php
 ¦   ¦       
 ¦   +---seeders
+¦           AdminSeeder.php
 ¦           DatabaseSeeder.php
 ¦           
 +---public
@@ -123,6 +129,8 @@ C:.
 ¦       ¦   .gitignore
 ¦       ¦   
 ¦       +---announcements
+¦       ¦   ¦   lM4PgeY7wDQPAbEu2NxTleTyg6bzhsF8sOYUGCdK.png
+¦       ¦   ¦   txteEmfhAkXxf3M6ru4Ct9rWdpabXD3f3BYm48Rg.jpg
 ¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
 ¦       ¦   ¦   
 ¦       ¦   +---blocks
@@ -145,6 +153,13 @@ C:.
 ¦       ¦   dashboard.blade.php
 ¦       ¦   welcome.blade.php
 ¦       ¦   
+¦       +---announcements
+¦       ¦       admin_index.blade.php
+¦       ¦       create.blade.php
+¦       ¦       edit.blade.php
+¦       ¦       public_index.blade.php
+¦       ¦       show.blade.php
+¦       ¦       
 ¦       +---auth
 ¦       ¦       confirm-password.blade.php
 ¦       ¦       forgot-password.blade.php
@@ -190,7 +205,7 @@ C:.
 ¦       ¦           update-profile-information-form.blade.php
 ¦       ¦           
 ¦       +---transactions
-¦               create.blade.php
+¦               (transactions)create.blade.php
 ¦               
 +---routes
 ¦       auth.php
@@ -208,6 +223,8 @@ C:.
     ¦       ¦   .gitignore
     ¦       ¦   
     ¦       +---announcements
+    ¦       ¦   ¦   lM4PgeY7wDQPAbEu2NxTleTyg6bzhsF8sOYUGCdK.png
+    ¦       ¦   ¦   txteEmfhAkXxf3M6ru4Ct9rWdpabXD3f3BYm48Rg.jpg
     ¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
     ¦       ¦   ¦   
     ¦       ¦   +---blocks
@@ -235,37 +252,55 @@ C:.
     ¦   ¦       
     ¦   +---views
     ¦           .gitignore
+    ¦           0001f2ac86ce829ba4ba6c63a800a085.php
+    ¦           0fce0b99059da29a0908d10b9e6c4c62.php
     ¦           1fe82842a5d814897ddefa9c485f42f4.php
     ¦           239b157f0acb9eede1e6a9433e6624e8.php
     ¦           28bb1c3f9a350c5902da516482566618.php
     ¦           2caf368072471c37f677c098fa32cfa4.php
+    ¦           334fcd86ab75f42e2d4af4dc1fc8d5b5.php
     ¦           360095dcf8a1924db500c2bb0e604c5e.php
     ¦           364092a312d13a6241826cb0cdbce029.php
+    ¦           3b81f5f92103dcccc547d7474f4618da.php
     ¦           3ca0fc8393852b96f86db87584bc295e.php
+    ¦           42752516b50d4e14e62041eead60a0cb.php
     ¦           429923bf37ff246c38eb9bb0643322bb.php
+    ¦           436bbb339d2f258675f8f2418620af05.php
     ¦           4c5f1bba1e1044052d9d6c6ec9947bb2.php
     ¦           4deb3c5d73f26f9a9fee065ab20cbfdb.php
     ¦           4fb959c8c5d1b6943df0ce8390414d25.php
+    ¦           4fc3bd66e1ea35c994aca792dc3014e2.php
     ¦           5027a471ffb85b747fdc27fcb94aea16.php
     ¦           560710b83821dbdcf965976261e4818e.php
     ¦           5d28859dd063c84e92c04f7122b9b299.php
     ¦           651e3dd6c8b7d532f77e4ba846f8a563.php
     ¦           68e73e0a15cadf9b72b7b6572cfc3a7c.php
+    ¦           759b64cbb200ad29909cf0ead1aae5e3.php
     ¦           780f38b284523931d0fe109880ded599.php
     ¦           798428efd94ed4d6b99f5b38ea24f742.php
     ¦           7a6793c1d149f178189a517947bb696a.php
     ¦           7abf6dbe4ed4cc1d2a2f8a40e0af852d.php
+    ¦           7d6e4de8214ec20df2734b2ba78cbb5a.php
     ¦           88d7583cf4cd37c58a7801e698c50c6b.php
     ¦           8ca33fe70058733b3c9ad21ff366366c.php
     ¦           94796c320c02f01a2208cfd56997935f.php
+    ¦           97fa63c209ee0b044e78f1fd9eb34542.php
     ¦           9bafb639349deca930d311404f7fa27d.php
+    ¦           a140a45d9ba2dee0a5e908e54355c4f2.php
     ¦           a327560174335e8762985dde1818034a.php
     ¦           a99f3781d01faccdd0a1b609f7203ec1.php
+    ¦           a9bc700f31b18d81547a91171704279c.php
+    ¦           aa446fd2fb762d333b3e31f634355fe6.php
     ¦           ac039e10d10a936b4b507eea013e5471.php
+    ¦           b12a980a239ac741d021acb9daa5a832.php
+    ¦           b8967201f0996084db9dca45e2c5e277.php
     ¦           bf2a9546c286a63191ab64e024638ad6.php
     ¦           cd71301e0fc1ac0572fe787dd98c257f.php
+    ¦           d05789d741dd505452268835863e947d.php
     ¦           d7d242cce162a61666f8172f6c99e6ff.php
     ¦           daf1a4ca65c80b249ac2ad4d1ad1641f.php
+    ¦           e8d36364df05ba0440e2e3c1392ccaa4.php
+    ¦           e8daf26377cc199dc7e9b8345aa385db.php
     ¦           ea8a2ef848652c439dc255cbc0df2148.php
     ¦           fe40456626d9a65ef322849f3e7acf9f.php
     ¦           
