@@ -6,19 +6,16 @@
     </x-slot>
 
     <style>
-        /* Gradient Background */
         .gradient-bg {
             background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5530 100%);
             min-height: 100vh;
             position: relative;
-            z-index: 1; /* Pastikan di belakang modal */
+            z-index: 1;
         }
 
-        /* Card Styles */
         .glass-card {
             background: rgba(22, 101, 52, 0.1);
             border: 1px solid rgba(34, 197, 94, 0.2);
-            backdrop-filter: blur(15px);
             border-radius: 16px;
             position: relative;
             z-index: 2;
@@ -27,60 +24,28 @@
         .stat-card {
             background: rgba(22, 101, 52, 0.2);
             border: 1px solid rgba(34, 197, 94, 0.3);
-            backdrop-filter: blur(10px);
             border-radius: 12px;
             transition: all 0.3s ease;
-            position: relative;
-            z-index: 2;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(22, 101, 52, 0.3);
-            background: rgba(22, 101, 52, 0.3);
         }
 
-        /* Button Styles */
         .btn-primary {
             background: linear-gradient(135deg, #059669, #34d399);
             border: none;
             border-radius: 8px;
             color: #065f46;
             font-weight: 600;
-            transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-            position: relative;
-            z-index: 2;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
             background: linear-gradient(135deg, #047857, #10b981);
-        }
-
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fecaca;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 2;
-        }
-
-        .btn-delete:hover {
-            background: rgba(239, 68, 68, 0.4);
-            border-color: rgba(239, 68, 68, 0.6);
-        }
-
-        /* Table Styles */
-        .glass-table {
-            background: rgba(22, 101, 52, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            backdrop-filter: blur(15px);
-            border-radius: 16px;
-            position: relative;
-            z-index: 2;
         }
 
         .table-header {
@@ -90,102 +55,72 @@
 
         .table-row {
             border-bottom: 1px solid rgba(34, 197, 94, 0.1);
-            transition: all 0.3s ease;
+            transition: background 0.2s ease;
         }
 
         .table-row:hover {
             background: rgba(22, 101, 52, 0.2);
         }
 
-        /* Notification */
-        .success-notification {
-            background: rgba(22, 101, 52, 0.3);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            position: relative;
-            z-index: 5; /* Lebih tinggi dari konten */
-        }
-
-        /* Text Colors */
-        .text-green-gradient {
-            background: linear-gradient(135deg, #34d399, #10b981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .text-red-gradient {
-            background: linear-gradient(135deg, #f87171, #ef4444);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .animate-fadeInUp {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .animate-slideIn {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        /* Modal Styles */
         .glass-modal {
             background: rgba(22, 101, 52, 0.2);
             border: 1px solid rgba(34, 197, 94, 0.3);
-            backdrop-filter: blur(20px);
             border-radius: 16px;
-            position: relative;
-            z-index: 100; /* Sangat tinggi untuk modal */
         }
 
-        /* Pattern Overlay */
         .pattern-overlay {
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.05) 1px, transparent 1px);
+            background-image: radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 2px, transparent 2px),
+                              radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.05) 1px, transparent 1px);
             background-size: 40px 40px, 20px 20px;
             opacity: 0.3;
         }
 
-        /* Z-index fixes */
-        .z-content {
-            position: relative;
-            z-index: 2;
+        /* OPTIMASI SCROLL MAKSIMAL */
+        .transaction-table-wrapper {
+            max-height: 70vh;
+            overflow-y: auto;
+            contain: paint; /* INI YANG BIKIN 60FPS */
+            will-change: scroll-position;
+            scrollbar-width: thin;
+            scrollbar-color: #22c55e #1a3a32;
+            border-radius: 12px;
         }
 
-        .z-modal {
-            position: fixed;
-            z-index: 1000;
+        .transaction-table-wrapper::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .z-toast {
-            position: fixed;
-            z-index: 1001;
+        .transaction-table-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .transaction-table-wrapper::-webkit-scrollbar-thumb {
+            background: #22c55e;
+            border-radius: 4px;
+        }
+
+        #transactionTable {
+            opacity: 1;
+            transition: opacity 0.15s ease-out;
+            will-change: opacity;
+        }
+
+        #transactionTable.loading {
+            opacity: 0.4;
+        }
+
+        /* Skeleton untuk chart */
+        .chart-skeleton {
+            background: linear-gradient(90deg, #1a3a32 25%, #162922 50%, #1a3a32 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            height: 300px;
+            border-radius: 12px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 
@@ -193,489 +128,396 @@
         <div class="absolute inset-0 pattern-overlay"></div>
         
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
-            <!-- Success Notification -->
             @if(session('success'))
-                <div id="success-notification" class="success-notification mb-6 p-4 text-green-300 animate-fadeInUp relative z-50">
-                    <button onclick="closeNotification('success-notification')" class="absolute top-3 right-3 text-green-300 hover:text-green-100 text-lg font-bold">
-                        &times;
-                    </button>
-                    <div class="flex items-center">
-                        <div class="w-5 h-5 bg-green-500 rounded-full mr-3"></div>
-                        <span>{{ session('success') }}</span>
-                    </div>
+                <div class="mb-6 p-4 bg-green-900/50 border border-green-500 text-green-300 rounded-lg animate-fadeInUp">
+                    {{ session('success') }}
                 </div>
             @endif
 
-           <!-- Stats Cards (disini kita pake 4 kolom hahay) -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 z-content">
-                <!-- Pemasukan -->
-                <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.1s">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium">Total Pemasukan</h3>
-                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="total-pemasukan" class="text-2xl font-bold text-green-300">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card p-6 text-white">
+                    <h3 class="text-lg font-medium">Total Pemasukan</h3>
+                    <p id="total-pemasukan" class="text-2xl font-bold text-green-300 mt-2">
                         Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
                     </p>
                 </div>
-
-                <!-- Pengeluaran -->
-                <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.2s">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium">Total Pengeluaran</h3>
-                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0 0l-4-4m4 4l4-4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="total-pengeluaran" class="text-2xl font-bold text-red-300">
+                <div class="stat-card p-6 text-white">
+                    <h3 class="text-lg font-medium">Total Pengeluaran</h3>
+                    <p id="total-pengeluaran" class="text-2xl font-bold text-red-300 mt-2">
                         Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
                     </p>
                 </div>
-
-                <!-- Saldo -->
-                <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.3s">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium">Saldo</h3>
-                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="saldo" class="text-2xl font-bold {{ $saldo >= 0 ? 'text-blue-300' : 'text-red-300' }}">
+                <div class="stat-card p-6 text-white">
+                    <h3 class="text-lg font-medium">Saldo</h3>
+                    <p id="saldo" class="text-2xl font-bold {{ $saldo >= 0 ? 'text-blue-300' : 'text-red-300' }} mt-2">
                         Rp {{ number_format($saldo + $totalUtang, 0, ',', '.') }}
-                        @if($totalUtang > 0)
-                            <span class="text-red-400 font-semibold" style="opacity:0.85;">
-                                ({{ number_format(-$totalUtang, 0, ',', '.') }})
-                            </span>
-                        @endif
+                        @if($totalUtang > 0)<span class="text-red-400 opacity-85">(-{{ number_format($totalUtang, 0, ',', '.') }})</span>@endif
                     </p>
                 </div>
-
-                <!-- Total Utang -->
-                <div class="stat-card p-6 text-white animate-fadeInUp" style="animation-delay: 0.35s">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium">Total Utang</h3>
-                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="total-utang" class="text-2xl font-bold text-red-300">
+                <div class="stat-card p-6 text-white">
+                    <h3 class="text-lg font-medium">Total Utang</h3>
+                    <p id="total-utang" class="text-2xl font-bold text-red-300 mt-2">
                         Rp {{ number_format($totalUtang, 0, ',', '.') }}
                     </p>
                 </div>
             </div>
 
-            
-
+            <!-- Charts dengan skeleton + lazy load -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Bar Chart: Pemasukan vs Pengeluaran -->
                 <div class="glass-card p-6 lg:col-span-2">
-                    <h3 class="text-lg font-semibold text-green-300 mb-4">Pemasukan vs Pengeluaran (6 Bulan Terakhir)</h3>
-                    <canvas id="barChart"></canvas>
+                    <h3 class="text-lg font-semibold text-green-300 mb-4">Pemasukan vs Pengeluaran</h3>
+                    <div id="barChartSkeleton" class="chart-skeleton"></div>
+                    <canvas id="barChart" class="hidden"></canvas>
                 </div>
-
-                <!-- Pie Chart: Komposisi Keuangan -->
                 <div class="glass-card p-6">
                     <h3 class="text-lg font-semibold text-green-300 mb-4">Komposisi Keuangan</h3>
-                    <canvas id="pieChart"></canvas>
+                    <div id="pieChartSkeleton" class="chart-skeleton"></div>
+                    <canvas id="pieChart" class="hidden"></canvas>
                 </div>
             </div>
 
-            <!-- Line Chart: Trend Saldo -->
             <div class="glass-card p-6 mb-8">
-                <h3 class="text-lg font-semibold text-green-300 mb-4">Trend Saldo (6 Bulan Terakhir)</h3>
-                <canvas id="lineChart"></canvas>
+                <h3 class="text-lg font-semibold text-green-300 mb-4">Trend Saldo</h3>
+                <div id="lineChartSkeleton" class="chart-skeleton"></div>
+                <canvas id="lineChart" class="hidden"></canvas>
             </div>
 
-
-            <!-- Form Filter + Search + Sort -->
-            <div class="glass-card p-6 mb-6 animate-fadeInUp"  style="animation-delay: 0.35s">
-                <form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <input type="text" name="search" value="{{ request('search') }}" 
-                            placeholder="Cari deskripsi..." 
-                            class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white placeholder-gray-400 focus:border-green-400 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <select name="type" class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white focus:border-green-400 focus:outline-none">
-                            <option value="">Semua Tipe</option>
-                            <option value="pemasukan" {{ request('type') == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
-                            <option value="pengeluaran" {{ request('type') == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="sort_by" class="w-full px-4 py-2 rounded-lg bg-gray-800 bg-opacity-50 border border-gray-700 text-white focus:border-green-400 focus:outline-none">
-                            <option value="date" {{ request('sort_by') == 'date' ? 'selected' : '' }}>Tanggal</option>
-                            <option value="amount" {{ request('sort_by') == 'amount' ? 'selected' : '' }}>Jumlah</option>
-                        </select>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button type="submit" class="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-lg font-medium hover:from-green-500 hover:to-emerald-400 transition">
-                            Terapkan Filter
-                        </button>
-                        @if(request()->hasAny(['search', 'type', 'sort_by']))
-                            <a href="{{ route('dashboard') }}" class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition">
-                                Reset
-                            </a>
-                        @endif
-                    </div>
-                </form>
+            <!-- Filter -->
+            <div class="glass-card p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="search" placeholder="Cari deskripsi..." class="px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white">
+                    <select id="type" class="px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white">
+                        <option value="">Semua Tipe</option>
+                        <option value="pemasukan">Pemasukan</option>
+                        <option value="pengeluaran">Pengeluaran</option>
+                        <option value="hutang">Hutang</option>
+                    </select>
+                    <select id="sort_by" class="px-4 py-2 rounded-lg bg-gray-800/50 border border-gray-700 text-white">
+                        <option value="date">Tanggal</option>
+                        <option value="amount">Jumlah</option>
+                    </select>
+                    <button id="toggleOrder" class="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-lg font-medium flex items-center justify-center gap-2">
+                        <span id="orderText">DESC</span>
+                        <svg id="orderIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </div>
             </div>
 
-            <!-- Tabel Transaksi -->
-            <div class="glass-card overflow-hidden animate-fadeInUp z-content" style="animation-delay: 0.4s">
+            <!-- Tabel dengan wrapper optimasi scroll -->
+            <div class="glass-card overflow-hidden">
                 <div class="p-6 text-white">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium">Riwayat Transaksi</h3>
-                        <a href="{{ route('transactions.create') }}" class="btn-primary px-6 py-3">
-                            + Tambah Transaksi
-                        </a>
+                        <a href="{{ route('transactions.create') }}" class="btn-primary px-6 py-3">+ Tambah Transaksi</a>
                     </div>
-                    
-                    @if($transactions->isEmpty())
-                        <p class="text-gray-300 text-center py-8">Belum ada transaksi.</p>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">Tanggal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">Jenis</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">Jumlah</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">Deskripsi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-700">
-                                    @foreach($transactions as $transaction)
-                                    <tr id="transaction-{{ $transaction->id }}" class="table-row">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                            {{ $transaction->formatted_date }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                {{ $transaction->type === 'pemasukan' ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30' }}">
-                                                {{ ucfirst($transaction->type) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold 
-                                            {{ $transaction->type === 'pemasukan' ? 'text-green-300' : 'text-red-300' }}">
-                                            {{ $transaction->formatted_amount }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                            {{ $transaction->description ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button class="btn-delete delete-btn px-3 py-2 rounded-md text-xs" 
-                                                    data-id="{{ $transaction->id }}">
-                                                Hapus
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+
+                    <div class="transaction-table-wrapper">
+                        <div id="transactionTable">
+                            @include('partials.transaction-table')
                         </div>
-                        <div class="mt-6">
-                            {{ $transactions->links() }}
-                        </div>
-                    @endif
+                    </div>
+
+                    <div id="pagination" class="mt-6">{{ $transactions->links() }}</div>
                 </div>
             </div>
-            <!-- Kotak Saran -->
-            <div class="mt-8 glass-card p-6 animate-fadeInUp z-content " style="animation-delay: 0.5s">
-                <h3 class="text-lg font-medium text-[#e1d5b5] mb-4">Kotak Saran</h3>
 
+            <!-- Kotak Saran (tetap sama) -->
+            <div class="mt-8 glass-card p-6">
+                <h3 class="text-lg font-medium text-[#e1d5b5] mb-4">Kotak Saran</h3>
                 <form action="{{ route('suggestions.store') }}" method="POST" class="space-y-4">
                     @csrf
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="name" class="block text-sm font-medium text-[#e1d5b5]">Nama (opsional)</label>
-                            <input type="text" name="name" id="name" 
-                                class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
-                                    focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
-                                    px-3 py-2"
-                                placeholder="Masukkan nama Anda">
+                            <label class="block text-sm font-medium text-[#e1d5b5]">Nama (opsional)</label>
+                            <input type="text" name="name" class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] px-3 py-2">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-[#e1d5b5]">Email (opsional)</label>
-                            <input type="email" name="email" id="email" 
-                                class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
-                                    focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
-                                    px-3 py-2"
-                                placeholder="Masukkan email Anda">
+                            <label class="block text-sm font-medium text-[#e1d5b5]">Email (opsional)</label>
+                            <input type="email" name="email" class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] px-3 py-2">
                         </div>
                     </div>
-
                     <div>
-                        <label for="message" class="block text-sm font-medium text-[#e1d5b5]">Saran Anda</label>
-                        <textarea name="message" id="message" rows="4"
-                            class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] shadow-sm 
-                                focus:border-[#e1d5b5] focus:ring-[#e1d5b5] sm:text-sm 
-                                px-3 py-2"
-                            placeholder="Tuliskan saran Anda di sini..."></textarea>
+                        <label class="block text-sm font-medium text-[#e1d5b5]">Saran Anda</label>
+                        <textarea name="message" rows="4" class="mt-1 block w-full rounded-md border border-[rgba(225,213,181,0.3)] bg-[rgba(21,47,48,0.5)] text-[#e1d5b5] px-3 py-2"></textarea>
                     </div>
-
-                    <div>
-                        <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-[rgba(225,213,181,0.2)] border border-[rgba(225,213,181,0.3)] rounded-md 
-                                font-semibold text-xs text-[#e1d5b5] uppercase tracking-widest hover:bg-[rgba(225,213,181,0.3)] 
-                                focus:bg-[rgba(225,213,181,0.3)] active:bg-[rgba(225,213,181,0.4)] focus:outline-none focus:ring-2 
-                                focus:ring-[#e1d5b5] focus:ring-offset-2 transition ease-in-out duration-150">
-                            Kirim
-                        </button>
-                    </div>
+                    <button type="submit" class="px-4 py-2 bg-[rgba(225,213,181,0.2)] border border-[rgba(225,213,181,0.3)] rounded-md text-[#e1d5b5] hover:bg-[rgba(225,213,181,0.3)]">
+                        Kirim
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Modal & Toast -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="glass-modal p-6 w-full max-w-md">
+            <h3 class="text-lg font-medium text-green-300 mb-4">Konfirmasi Hapus</h3>
+            <p class="text-gray-300 mb-6">Yakin ingin menghapus transaksi ini?</p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelDelete" class="px-4 py-2 bg-gray-600 text-gray-200 rounded hover:bg-gray-500">Batal</button>
+                <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-    $(document).ready(function() {
-        let selectedTransactionId = null;
-        const deleteModal = $('#deleteModal');
-        const toast = $('#toast');
-        
-        // Fungsi untuk menampilkan modal konfirmasi
-        $('.delete-btn').click(function() {
-            selectedTransactionId = $(this).data('id');
-            deleteModal.removeClass('hidden');
+        let barChart = null, lineChart = null, pieChart = null;
+        let currentOrder = 'desc';
+        let deleteId = null;
+        let isLoading = false;
+        let chartsInitialized = false; // ubah jadi false dulu, biar pasti
+
+        // Debounce
+        const debounce = (func, delay) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), delay);
+            };
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTransactions();
+
+            // Toggle ASC/DESC
+            document.getElementById('toggleOrder').addEventListener('click', () => {
+                currentOrder = currentOrder === 'desc' ? 'asc' : 'desc';
+                document.getElementById('orderText').textContent = currentOrder.toUpperCase();
+                document.getElementById('orderIcon').setAttribute('d', currentOrder === 'desc' ? 'M19 9l-7 7-7-7' : 'M5 15l7-7 7 7');
+                loadTransactions();
+            });
+
+            // Filter events
+            document.getElementById('search').addEventListener('input', debounce(loadTransactions, 300));
+            ['type', 'sort_by'].forEach(id => document.getElementById(id).addEventListener('change', loadTransactions));
+
+            // DELEGATION HAPUS (aman meski tabel diganti berkali-kali
+            document.getElementById('transactionTable').addEventListener('click', e => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    deleteId = deleteBtn.dataset.id;
+                    document.getElementById('deleteModal').classList.remove('hidden');
+                }
+            });
         });
-        
-        // Fungsi untuk membatalkan penghapusan
-        $('#cancelDelete').click(function() {
-            deleteModal.addClass('hidden');
-            selectedTransactionId = null;
+
+        // Lazy load chart + skeleton removal
+        const chartObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !chartsInitialized) {
+                    chartsInitialized = true;
+                    initCharts();
+                    document.querySelectorAll('[id$="ChartSkeleton"]').forEach(el => el.remove());
+                    document.querySelectorAll('canvas[id$="Chart"]').forEach(el => el.classList.remove('hidden'));
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('#barChart, #lineChart, #pieChart').forEach(canvas => {
+            chartObserver.observe(canvas.parentElement);
         });
-        
-        // Fungsi untuk mengkonfirmasi penghapusan
-        $('#confirmDelete').click(function() {
-            if (selectedTransactionId) {
-                deleteTransaction(selectedTransactionId);
-                deleteModal.addClass('hidden');
-            }
-        });
-        
-        // Tutup modal ketika klik di luar area modal
-        deleteModal.click(function(e) {
-            if (e.target === this) {
-                deleteModal.addClass('hidden');
-                selectedTransactionId = null;
-            }
-        });
-        
-        // Fungsi untuk menghapus transaksi via AJAX
-        function deleteTransaction(transactionId) {
-            const $row = $('#transaction-' + transactionId);
-            
-            $.ajax({
-                url: '/transactions/' + transactionId,
-                type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
+
+        function initCharts() {
+            // Bar Chart – grid lebih terang
+            const ctx1 = document.getElementById('barChart').getContext('2d');
+            barChart = new Chart(ctx1, {
+                type: 'bar',
+                data: { 
+                    labels: @json($months), 
+                    datasets: [
+                        { 
+                            label: 'Pemasukan', 
+                            data: @json($pemasukanData), 
+                            backgroundColor: 'rgba(34, 197, 94, 0.6)', 
+                            borderColor: '#22c55e', 
+                            borderWidth: 2 
+                        },
+                        { 
+                            label: 'Pengeluaran', 
+                            data: @json($pengeluaranData), 
+                            backgroundColor: 'rgba(239, 68, 68, 0.6)', 
+                            borderColor: '#ef4444', 
+                            borderWidth: 2 
+                        }
+                    ]
                 },
-                success: function(response) {
-                    if (response.success) {
-                        // Hapus baris dari tabel
-                        $row.fadeOut(300, function() {
-                            $(this).remove();
-                            // Perbarui ringkasan keuangan
-                            updateFinancialSummary(response.newSummary);
-                            // Tampilkan notifikasi sukses
-                            showToast(response.message, 'success');
-                        });
-                    } else {
-                        showToast('Gagal menghapus transaksi.', 'error');
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { labels: { color: '#e1d5b5' } } },
+                    scales: {
+                        x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } },
+                        y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }
                     }
+                }
+            });
+
+            // Line Chart – fill & garis lebih terang
+            const ctx2 = document.getElementById('lineChart').getContext('2d');
+            lineChart = new Chart(ctx2, {
+                type: 'line',
+                data: { 
+                    labels: @json($months), 
+                    datasets: [{
+                        label: 'Saldo', 
+                        data: @json($saldoData), 
+                        borderColor: '#22c55e', 
+                        backgroundColor: 'rgba(34, 197, 94, 0.25)', 
+                        fill: true, 
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
                 },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    showToast('Terjadi kesalahan saat menghapus transaksi.', 'error');
+                options: { 
+                    responsive: true, 
+                    plugins: { legend: { labels: { color: '#e1d5b5' } } },
+                    scales: {
+                        x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } },
+                        y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }
+                    }
+                }
+            });
+
+            // Pie Chart – 100% SAMA PERSIS seperti default yang kamu suka
+            const ctx3 = document.getElementById('pieChart').getContext('2d');
+            pieChart = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pemasukan Total', 'Pengeluaran Total', 'Utang Belum Lunas'],
+                    datasets: [{
+                        data: [{{ $totalPemasukan }}, {{ $totalPengeluaran }}, {{ $totalUtang }}],
+                        backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
+                        borderColor: '#1a3a32',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#e1d5b5' }
+                        }
+                    }
                 }
             });
         }
 
-        // Fungsi untuk memperbarui ringkasan keuangan
-        function updateFinancialSummary(summary) {
-            $('#total-pemasukan').text('Rp ' + formatNumber(summary.totalPemasukan));
-            $('#total-pengeluaran').text('Rp ' + formatNumber(summary.totalPengeluaran));
-            $('#total-utang').text('Rp ' + formatNumber(summary.totalUtang)); // <-- TAMBAHKAN
-            $('#saldo').text('Rp ' + formatNumber(summary.saldo));
+        function loadTransactions() {
+            if (isLoading) return;
+            isLoading = true;
+
+            const container = document.getElementById('transactionTable');
+            container.classList.add('loading');
+
+            const params = new URLSearchParams({
+                search: document.getElementById('search').value.trim(),
+                type: document.getElementById('type').value,
+                sort_by: document.getElementById('sort_by').value,
+                order: currentOrder
+            });
+
+            fetch(`{{ route('dashboard') }}?${params}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                requestAnimationFrame(() => {
+                    container.innerHTML = data.table;
+                    document.getElementById('pagination').innerHTML = data.pagination;
+
+                    // Update summary
+                    document.getElementById('total-pemasukan').textContent = data.summary.totalPemasukan;
+                    document.getElementById('total-pengeluaran').textContent = data.summary.totalPengeluaran;
+                    document.getElementById('total-utang').textContent = data.summary.totalUtang;
+
+                    const saldoEl = document.getElementById('saldo');
+                    saldoEl.innerHTML = data.summary.saldo + (data.summary.totalUtang !== 'Rp 0' ? ` <span class="text-red-400 opacity-85">(${data.summary.totalUtang})</span>` : '');
+
+                    // Update charts kalau sudah di-load
+                    if (chartsInitialized) {
+                        barChart.data.labels = data.chart.months;
+                        barChart.data.datasets[0].data = data.chart.pemasukan;
+                        barChart.data.datasets[1].data = data.chart.pengeluaran;
+                        barChart.update('none');
+
+                        lineChart.data.labels = data.chart.months;
+                        lineChart.data.datasets[0].data = data.chart.saldo;
+                        lineChart.update('none');
+
+                        pieChart.data.datasets[0].data = data.chart.pie;
+                        pieChart.update('none');
+                    }
+
+                    container.classList.remove('loading');
+                    isLoading = false;
+                });
+            })
+            .catch(() => {
+                container.classList.remove('loading');
+                isLoading = false;
+                showToast('Gagal memuat data transaksi', 'error');
+            });
         }
 
-        // Fungsi untuk memformat angka (tanpa desimal)
-        function formatNumber(number) {
-            const integerNumber = Math.round(number);
-            return integerNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        // === DELETE TRANSACTION + TOAST KEMBALI NORMAL ===
+        function deleteTransaction(id) {
+            fetch(`/transactions/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(res => {
+                loadTransactions();
+                showToast(res.message || 'Transaksi berhasil dihapus!', 'success');
+            })
+            .catch(err => {
+                console.error(err);
+                showToast(err.message || 'Gagal menghapus transaksi', 'error');
+            })
+            .finally(() => {
+                document.getElementById('deleteModal').classList.add('hidden');
+                deleteId = null;
+            });
         }
-        
-        // Fungsi untuk menampilkan toast notifikasi
+
+        document.getElementById('confirmDelete').onclick = () => {
+            if (deleteId) deleteTransaction(deleteId);
+        };
+
+        document.getElementById('cancelDelete').onclick = () => {
+            document.getElementById('deleteModal').classList.add('hidden');
+            deleteId = null;
+        };
+
+        // Toast (dengan efek glass yang bagus)
         function showToast(message, type = 'success') {
-            // Hapus toast sebelumnya jika ada
-            $('.toast-message').remove();
-            
             const toast = document.createElement('div');
-            toast.className = `animate-slideIn p-4 rounded-lg shadow-lg flex items-center glass-effect border z-toast ${
-                type === 'success' ? 'border-green-500/30 text-green-300' : 
-                'border-red-500/30 text-red-300'
-            }`;
+            toast.className = `animate-slideIn p-4 rounded-xl shadow-2xl flex items-center gap-3 border backdrop-blur-md min-w-80 ${type === 'success' ? 'bg-green-950/70 border-green-500/50 text-green-200' : 'bg-red-950/70 border-red-500/50 text-red-200'}`;
             toast.innerHTML = `
-                <span class="flex-1 toast-message">${message}</span>
-                <button onclick="this.parentElement.remove()" class="ml-4 text-current hover:opacity-70 text-lg">
-                    &times;
-                </button>
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-current hover:opacity-70 text-xl leading-none">&times;</button>
             `;
-            
             document.getElementById('toast-container').appendChild(toast);
             
-            // Sembunyikan otomatis setelah 3 detik
+            // Auto remove
             setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.remove();
-                }
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-
-        // Fungsi untuk menyembunyikan toast
-        function hideToast() {
-            $('.toast-message').remove();
-        }
-    });
-
-    // Fungsi untuk menutup notifikasi success
-    function closeNotification(notificationId) {
-        const notification = document.getElementById(notificationId);
-        if (notification) {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 300);
-        }
-    }
-
-    // Auto-close notifikasi setelah 5 detik
-    document.addEventListener('DOMContentLoaded', function() {
-        const notification = document.getElementById('success-notification');
-        if (notification) {
-            setTimeout(() => {
-                closeNotification('success-notification');
-            }, 5000);
-        }
-    });
     </script>
-
-    <!-- Modal Konfirmasi Hapus -->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center z-modal hidden">
-        <div class="glass-modal p-6 w-full max-w-md animate-slideIn">
-            <h3 class="text-lg font-medium text-green-300 mb-4">Konfirmasi Hapus</h3>
-            <p class="text-gray-300 mb-6">Apakah Anda yakin ingin menghapus transaksi ini?</p>
-            <div class="flex justify-end space-x-3">
-                <button id="cancelDelete" class="px-4 py-2 bg-gray-600 text-gray-200 rounded-md hover:bg-gray-500 transition">
-                    Batal
-                </button>
-                <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-                    Hapus
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast-container" class="fixed top-4 right-4 z-toast space-y-3"></div>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const ctxBar = document.getElementById('barChart').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: @json($months),
-                datasets: [
-                    {
-                        label: 'Pemasukan',
-                        data: @json($pemasukanData),
-                        backgroundColor: 'rgba(34, 197, 94, 0.6)',
-                        borderColor: '#22c55e',
-                        borderWidth: 2
-                    },
-                    {
-                        label: 'Pengeluaran',
-                        data: @json($pengeluaranData),
-                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                        borderColor: '#ef4444',
-                        borderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#e1d5b5' } } },
-                scales: {
-                    y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } },
-                    x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } }
-                }
-            }
-        });
-
-        const ctxLine = document.getElementById('lineChart').getContext('2d');
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: @json($months),
-                datasets: [{
-                    label: 'Saldo',
-                    data: @json($saldoData),
-                    borderColor: '#22c55e',
-                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#e1d5b5' } } },
-                scales: {
-                    y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } },
-                    x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.1)' } }
-                }
-            }
-        });
-
-        const ctxPie = document.getElementById('pieChart').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pemasukan Total', 'Pengeluaran Total', 'Utang Belum Lunas'],
-                datasets: [{
-                    data: [{{ $totalPemasukan }}, {{ $totalPengeluaran }}, {{ $totalUtang }}],
-                    backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
-                    borderWidth: 2,
-                    borderColor: '#1a3a32'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'bottom', labels: { color: '#e1d5b5' } } }
-            }
-        });
-    });
-    </script>
-
-
-
-
 </x-app-layout>
