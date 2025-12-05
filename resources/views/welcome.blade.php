@@ -78,6 +78,17 @@
                 transition: all 0.3s ease;
                 backdrop-filter: blur(10px);
             }
+            
+
+            .no-drag{     
+                user-select: none;
+                -webkit-user-drag: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                pointer-events: auto;
+            }
+
 
             .nav-link:hover {
                 background: rgba(22, 101, 52, 0.4);
@@ -320,11 +331,14 @@
             .popup-image {
                 max-width: 100%;
                 height: auto;
+                max-height: 60vh;   /* <<< tambahkan ini */
+                object-fit: contain;/* <<< dan ini */
                 border-radius: 12px;
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
                 display: block;
                 margin: 0 auto;
             }
+
 
             .popup-title {
                 text-align: center;
@@ -506,7 +520,7 @@
             <div class="popup-content" onclick="event.stopPropagation()">
                 <button class="popup-close" onclick="closePopup()">&times;</button>
                 <h2 class="popup-title">CREDIT TEAM DADF</h2>
-                <img src="images/creditkami.jpg" alt="Credit DADF" class="popup-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="images/creditkami.png" alt="Credit DADF" class="popup-image no-drag" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" oncontextmenu="return false;"draggable="false">
                 <div style="display: none; text-align: center; padding: 2rem; color: #a7f3d0;">
                     <p>Gambar tidak ditemukan</p>
                     <p style="font-size: 0.875rem; margin-top: 0.5rem;">Pastikan file gambar berada di folder <strong>public/images/creditkami.jpg</strong></p>
@@ -542,6 +556,15 @@
             // Tambahkan efek smooth loading untuk gambar
             document.querySelector('.popup-image').addEventListener('load', function() {
                 this.style.animation = 'popupBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            });
+
+
+            // Mencegah klik kanan pada gambar popup
+            document.addEventListener("DOMContentLoaded", () => {
+                const img = document.querySelector(".popup-image");
+                if (img) {
+                    img.addEventListener("contextmenu", e => e.preventDefault());
+                }
             });
         </script>
     </body>

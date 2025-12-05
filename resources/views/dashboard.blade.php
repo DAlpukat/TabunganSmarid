@@ -122,6 +122,14 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+        .success-notification {
+            background: rgba(22, 101, 52, 0.3);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            position: relative;
+            z-index: 5; 
+        }
     </style>
 
     <div class="gradient-bg py-12 relative">
@@ -129,8 +137,14 @@
         
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
             @if(session('success'))
-                <div class="mb-6 p-4 bg-green-900/50 border border-green-500 text-green-300 rounded-lg animate-fadeInUp">
-                    {{ session('success') }}
+                <div id="success-notification" class="success-notification mb-6 p-4 text-green-300 animate-fadeInUp relative z-50">
+                    <button onclick="closeNotification('success-notification')" class="absolute top-3 right-3 text-green-300 hover:text-green-100 text-lg font-bold">
+                        &times;
+                    </button>
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 bg-green-500 rounded-full mr-3"></div>
+                        <span>{{ session('success') }}</span>
+                    </div>
                 </div>
             @endif
 
@@ -519,5 +533,27 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
+        function closeNotification(notificationId) {
+        const notification = document.getElementById(notificationId);
+        if (notification) {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    // Auto-close notifikasi setelah 5 detik
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.getElementById('success-notification');
+        if (notification) {
+            setTimeout(() => {
+                closeNotification('success-notification');
+            }, 5000);
+        }
+    });
+
+
     </script>
 </x-app-layout>
