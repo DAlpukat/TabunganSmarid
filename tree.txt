@@ -1,4 +1,5 @@
-
+Folder PATH listing for volume OS
+Volume serial number is 7C36-DFB3
 C:.
 ¦   .editorconfig
 ¦   .env
@@ -29,6 +30,9 @@ C:.
 ¦   ¦   ¦   ¦   SuggestionController.php
 ¦   ¦   ¦   ¦   TransactionController.php
 ¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---Admin
+¦   ¦   ¦   ¦       UserController.php
+¦   ¦   ¦   ¦       
 ¦   ¦   ¦   +---Auth
 ¦   ¦   ¦           AuthenticatedSessionController.php
 ¦   ¦   ¦           ConfirmablePasswordController.php
@@ -123,7 +127,7 @@ C:.
 ¦   ¦           app-DtCVKgHt.js
 ¦   ¦           
 ¦   +---images
-¦   ¦       creditkami.jpg
+¦   ¦       creditkami.png
 ¦   ¦       
 ¦   +---storage
 ¦       ¦   .gitignore
@@ -131,6 +135,7 @@ C:.
 ¦       +---announcements
 ¦       ¦   ¦   lM4PgeY7wDQPAbEu2NxTleTyg6bzhsF8sOYUGCdK.png
 ¦       ¦   ¦   txteEmfhAkXxf3M6ru4Ct9rWdpabXD3f3BYm48Rg.jpg
+¦       ¦   ¦   uSfwog6WrUfqUvdXtHRxclPCJgUHrRme839UtmNp.png
 ¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
 ¦       ¦   ¦   
 ¦       ¦   +---blocks
@@ -139,6 +144,7 @@ C:.
 ¦       +---avatars
 ¦               G8GTTD10Mf1TS6qRCU9dYTd2ZDQJlp32c5wRvnkw.jpg
 ¦               gcCS63LpY4WtHpqc97bcS42T8B2MlY4FXlQqzake.jpg
+¦               HRcr8dycoyXlEZB87bcCvTddL3dpSsG3lnRR35es.png
 ¦               MhGLe9bKzcpm7OIHRqe2jGjObPbxUz0jOYXnR1vn.jpg
 ¦               
 +---resources
@@ -153,6 +159,10 @@ C:.
 ¦       ¦   dashboard.blade.php
 ¦       ¦   welcome.blade.php
 ¦       ¦   
+¦       +---admin
+¦       ¦   +---users
+¦       ¦           index.blade.php
+¦       ¦           
 ¦       +---announcements
 ¦       ¦       admin_index.blade.php
 ¦       ¦       create.blade.php
@@ -196,6 +206,9 @@ C:.
 ¦       ¦       guest.blade.php
 ¦       ¦       navigation.blade.php
 ¦       ¦       
+¦       +---partials
+¦       ¦       transaction-table.blade.php
+¦       ¦       
 ¦       +---profile
 ¦       ¦   ¦   edit.blade.php
 ¦       ¦   ¦   
@@ -205,7 +218,7 @@ C:.
 ¦       ¦           update-profile-information-form.blade.php
 ¦       ¦           
 ¦       +---transactions
-¦               (transactions)create.blade.php
+¦               create.blade.php
 ¦               
 +---routes
 ¦       auth.php
@@ -225,6 +238,7 @@ C:.
     ¦       +---announcements
     ¦       ¦   ¦   lM4PgeY7wDQPAbEu2NxTleTyg6bzhsF8sOYUGCdK.png
     ¦       ¦   ¦   txteEmfhAkXxf3M6ru4Ct9rWdpabXD3f3BYm48Rg.jpg
+    ¦       ¦   ¦   uSfwog6WrUfqUvdXtHRxclPCJgUHrRme839UtmNp.png
     ¦       ¦   ¦   WkrYRX1As6exlXKfGz4YmePtYeNqTp4R9cYktcPq.png
     ¦       ¦   ¦   
     ¦       ¦   +---blocks
@@ -233,6 +247,7 @@ C:.
     ¦       +---avatars
     ¦               G8GTTD10Mf1TS6qRCU9dYTd2ZDQJlp32c5wRvnkw.jpg
     ¦               gcCS63LpY4WtHpqc97bcS42T8B2MlY4FXlQqzake.jpg
+    ¦               HRcr8dycoyXlEZB87bcCvTddL3dpSsG3lnRR35es.png
     ¦               MhGLe9bKzcpm7OIHRqe2jGjObPbxUz0jOYXnR1vn.jpg
     ¦               
     +---framework
@@ -257,6 +272,7 @@ C:.
     ¦           1fe82842a5d814897ddefa9c485f42f4.php
     ¦           239b157f0acb9eede1e6a9433e6624e8.php
     ¦           28bb1c3f9a350c5902da516482566618.php
+    ¦           2980f88053fd11e7506ea3831b0ae153.php
     ¦           2caf368072471c37f677c098fa32cfa4.php
     ¦           334fcd86ab75f42e2d4af4dc1fc8d5b5.php
     ¦           360095dcf8a1924db500c2bb0e604c5e.php
@@ -275,12 +291,14 @@ C:.
     ¦           5d28859dd063c84e92c04f7122b9b299.php
     ¦           651e3dd6c8b7d532f77e4ba846f8a563.php
     ¦           68e73e0a15cadf9b72b7b6572cfc3a7c.php
+    ¦           6dbe337d40dcc249b575fd33ceb12ab0.php
     ¦           759b64cbb200ad29909cf0ead1aae5e3.php
     ¦           780f38b284523931d0fe109880ded599.php
     ¦           798428efd94ed4d6b99f5b38ea24f742.php
     ¦           7a6793c1d149f178189a517947bb696a.php
     ¦           7abf6dbe4ed4cc1d2a2f8a40e0af852d.php
     ¦           7d6e4de8214ec20df2734b2ba78cbb5a.php
+    ¦           859d2106c45518cd11316a509f56ad5e.php
     ¦           88d7583cf4cd37c58a7801e698c50c6b.php
     ¦           8ca33fe70058733b3c9ad21ff366366c.php
     ¦           94796c320c02f01a2208cfd56997935f.php

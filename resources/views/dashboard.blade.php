@@ -162,17 +162,29 @@
                         Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
                     </p>
                 </div>
+                <!-- SALDO CARD -->
                 <div class="stat-card p-6 text-white">
                     <h3 class="text-lg font-medium">Saldo</h3>
-                    <p id="saldo" class="text-2xl font-bold {{ $saldo >= 0 ? 'text-blue-300' : 'text-red-300' }} mt-2">
-                        Rp {{ number_format($saldo + $totalUtang, 0, ',', '.') }}
-                        @if($totalUtang > 0)<span class="text-red-400 opacity-85">(-{{ number_format($totalUtang, 0, ',', '.') }})</span>@endif
-                    </p>
+                    <div id="saldo-container" class="mt-3 space-y-1">
+                        <p class="text-2xl font-bold leading-tight text-blue-300">
+                            Rp {{ number_format($saldo + $totalUtang, 0, ',', '.') }}
+                        </p>
+                        @if($totalUtang > 0)
+                            <p class="text-xl font-bold leading-tight text-red-400">
+                                (- Rp {{ number_format($totalUtang, 0, ',', '.') }})
+                            </p>
+                        @endif
+                    </div>
                 </div>
-                <div class="stat-card p-6 text-white">
-                    <h3 class="text-lg font-medium">Total Utang</h3>
-                    <p id="total-utang" class="text-2xl font-bold text-red-300 mt-2">
-                        Rp {{ number_format($totalUtang, 0, ',', '.') }}
+
+                <!-- TOTAL UTANG CARD -->
+                <div class="stat-card p-6 text-white {{ $totalUtang > 0 ? 'border-red-500/40 bg-red-500/5' : '' }} transition-all duration-300">
+                    <h3 class="text-lg font-medium {{ $totalUtang > 0 ? 'text-red-300' : '' }}">Total Utang</h3>
+                    <p id="total-utang" class="text-3xl font-bold text-red-400 mt-3 leading-tight">
+                        {{ $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0' }}
+                    </p>
+                    <p id="utang-warning" class="text-red-400 text-sm mt-2 opacity-80 animate-pulse {{ $totalUtang > 0 ? '' : 'hidden' }}">
+                        ▼ Harus segera dibayar!
                     </p>
                 </div>
             </div>
@@ -278,15 +290,13 @@
     <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-3"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         let barChart = null, lineChart = null, pieChart = null;
         let currentOrder = 'desc';
         let deleteId = null;
         let isLoading = false;
-        let chartsInitialized = false; // ubah jadi false dulu, biar pasti
+        let chartsInitialized = false;
 
-        // Debounce
         const debounce = (func, delay) => {
             let timeout;
             return (...args) => {
@@ -298,7 +308,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadTransactions();
 
-            // Toggle ASC/DESC
             document.getElementById('toggleOrder').addEventListener('click', () => {
                 currentOrder = currentOrder === 'desc' ? 'asc' : 'desc';
                 document.getElementById('orderText').textContent = currentOrder.toUpperCase();
@@ -306,11 +315,9 @@
                 loadTransactions();
             });
 
-            // Filter events
             document.getElementById('search').addEventListener('input', debounce(loadTransactions, 300));
             ['type', 'sort_by'].forEach(id => document.getElementById(id).addEventListener('change', loadTransactions));
 
-            // DELEGATION HAPUS (aman meski tabel diganti berkali-kali
             document.getElementById('transactionTable').addEventListener('click', e => {
                 const deleteBtn = e.target.closest('.delete-btn');
                 if (deleteBtn) {
@@ -320,113 +327,74 @@
             });
         });
 
-        // Lazy load chart + skeleton removal
         const chartObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !chartsInitialized) {
                     chartsInitialized = true;
-                    initCharts();
+                    initCharts({!! json_encode(['months' => $months, 'pemasukanData' => $pemasukanData, 'pengeluaranData' => $pengeluaranData, 'saldoData' => $saldoData, 'pie' => [$totalPemasukan, $totalPengeluaran, $totalUtang]]) !!});
                     document.querySelectorAll('[id$="ChartSkeleton"]').forEach(el => el.remove());
                     document.querySelectorAll('canvas[id$="Chart"]').forEach(el => el.classList.remove('hidden'));
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('#barChart, #lineChart, #pieChart').forEach(canvas => {
-            chartObserver.observe(canvas.parentElement);
-        });
+        document.querySelectorAll('#barChart, #lineChart, #pieChart').forEach(canvas => chartObserver.observe(canvas.parentElement));
 
-        function initCharts() {
-            // Bar Chart – grid lebih terang
+        function initCharts(initialData) {
+            // Bar Chart
             const ctx1 = document.getElementById('barChart').getContext('2d');
             barChart = new Chart(ctx1, {
                 type: 'bar',
-                data: { 
-                    labels: @json($months), 
+                data: {
+                    labels: initialData.months,
                     datasets: [
-                        { 
-                            label: 'Pemasukan', 
-                            data: @json($pemasukanData), 
-                            backgroundColor: 'rgba(34, 197, 94, 0.6)', 
-                            borderColor: '#22c55e', 
-                            borderWidth: 2 
-                        },
-                        { 
-                            label: 'Pengeluaran', 
-                            data: @json($pengeluaranData), 
-                            backgroundColor: 'rgba(239, 68, 68, 0.6)', 
-                            borderColor: '#ef4444', 
-                            borderWidth: 2 
-                        }
+                        { label: 'Pemasukan', data: initialData.pemasukanData, backgroundColor: 'rgba(34, 197, 94, 0.6)', borderColor: '#22c55e', borderWidth: 2 },
+                        { label: 'Pengeluaran', data: initialData.pengeluaranData, backgroundColor: 'rgba(239, 68, 68, 0.6)', borderColor: '#ef4444', borderWidth: 2 }
                     ]
                 },
-                options: { 
-                    responsive: true, 
-                    plugins: { legend: { labels: { color: '#e1d5b5' } } },
-                    scales: {
-                        x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } },
-                        y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { labels: { color: '#e1d5b5' } } }, scales: { x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }, y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } } } }
             });
 
-            // Line Chart – fill & garis lebih terang
+            // Line Chart
             const ctx2 = document.getElementById('lineChart').getContext('2d');
             lineChart = new Chart(ctx2, {
                 type: 'line',
-                data: { 
-                    labels: @json($months), 
+                data: {
+                    labels: initialData.months,
                     datasets: [{
-                        label: 'Saldo', 
-                        data: @json($saldoData), 
-                        borderColor: '#22c55e', 
-                        backgroundColor: 'rgba(34, 197, 94, 0.25)', 
-                        fill: true, 
+                        label: 'Saldo',
+                        data: initialData.saldoData,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.25)',
+                        fill: true,
                         tension: 0.4,
                         borderWidth: 3
                     }]
                 },
-                options: { 
-                    responsive: true, 
-                    plugins: { legend: { labels: { color: '#e1d5b5' } } },
-                    scales: {
-                        x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } },
-                        y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { labels: { color: '#e1d5b5' } } }, scales: { x: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } }, y: { ticks: { color: '#e1d5b5' }, grid: { color: 'rgba(34, 197, 94, 0.2)' } } } }
             });
 
-            // Pie Chart – 100% SAMA PERSIS seperti default yang kamu suka
+            // Pie Chart
             const ctx3 = document.getElementById('pieChart').getContext('2d');
             pieChart = new Chart(ctx3, {
                 type: 'doughnut',
                 data: {
                     labels: ['Pemasukan Total', 'Pengeluaran Total', 'Utang Belum Lunas'],
                     datasets: [{
-                        data: [{{ $totalPemasukan }}, {{ $totalPengeluaran }}, {{ $totalUtang }}],
+                        data: initialData.pie,
                         backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
                         borderColor: '#1a3a32',
                         borderWidth: 2
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#e1d5b5' }
-                        }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#e1d5b5' } } } }
             });
         }
 
         function loadTransactions() {
             if (isLoading) return;
             isLoading = true;
-
-            const container = document.getElementById('transactionTable');
-            container.classList.add('loading');
+            document.getElementById('transactionTable').classList.add('loading');
 
             const params = new URLSearchParams({
                 search: document.getElementById('search').value.trim(),
@@ -440,120 +408,95 @@
             })
             .then(r => r.json())
             .then(data => {
-                requestAnimationFrame(() => {
-                    container.innerHTML = data.table;
-                    document.getElementById('pagination').innerHTML = data.pagination;
+                // Update table & pagination
+                document.getElementById('transactionTable').innerHTML = data.table;
+                document.getElementById('pagination').innerHTML = data.pagination;
 
-                    // Update summary
-                    document.getElementById('total-pemasukan').textContent = data.summary.totalPemasukan;
-                    document.getElementById('total-pengeluaran').textContent = data.summary.totalPengeluaran;
-                    document.getElementById('total-utang').textContent = data.summary.totalUtang;
+                // Update stat cards
+                document.getElementById('total-pemasukan').textContent = data.summary.totalPemasukan;
+                document.getElementById('total-pengeluaran').textContent = data.summary.totalPengeluaran;
 
-                    const saldoEl = document.getElementById('saldo');
-                    saldoEl.innerHTML = data.summary.saldo + (data.summary.totalUtang !== 'Rp 0' ? ` <span class="text-red-400 opacity-85">(${data.summary.totalUtang})</span>` : '');
+                // Saldo + Hutang (multi-line)
+                const baseSaldo = data.summary.saldo;
+                const utangVal = data.summary.totalUtang.replace('Rp ', '').trim();
+                const hasUtang = parseInt(utangVal.replace(/\D/g, '') || 0) > 0;
 
-                    // Update charts kalau sudah di-load
-                    if (chartsInitialized) {
-                        barChart.data.labels = data.chart.months;
-                        barChart.data.datasets[0].data = data.chart.pemasukan;
-                        barChart.data.datasets[1].data = data.chart.pengeluaran;
-                        barChart.update('none');
+                document.getElementById('saldo-container').innerHTML = `
+                    <p class="text-2xl font-bold leading-tight text-blue-300">${baseSaldo}</p>
+                    ${hasUtang ? `<p class="text-xl font-bold leading-tight text-red-400">(- Rp ${utangVal})</p>` : ''}
+                `;
 
-                        lineChart.data.labels = data.chart.months;
-                        lineChart.data.datasets[0].data = data.chart.saldo;
-                        lineChart.update('none');
+                // Total Utang
+                document.getElementById('total-utang').textContent = hasUtang ? `- Rp ${utangVal}` : 'Rp 0';
 
-                        pieChart.data.datasets[0].data = data.chart.pie;
-                        pieChart.update('none');
-                    }
+                // Border + warning
+                const utangCard = document.getElementById('total-utang').closest('.stat-card');
+                const warning = document.getElementById('utang-warning');
+                if (hasUtang) {
+                    utangCard.classList.add('border-red-500/40', 'bg-red-500/5');
+                    warning.classList.remove('hidden');
+                } else {
+                    utangCard.classList.remove('border-red-500/40', 'bg-red-500/5');
+                    warning.classList.add('hidden');
+                }
 
-                    container.classList.remove('loading');
-                    isLoading = false;
-                });
+                // Update charts kalau sudah di-init
+                if (chartsInitialized) {
+                    barChart.data.labels = data.chart.months;
+                    barChart.data.datasets[0].data = data.chart.pemasukan;
+                    barChart.data.datasets[1].data = data.chart.pengeluaran;
+                    barChart.update('none');
+
+                    lineChart.data.labels = data.chart.months;
+                    lineChart.data.datasets[0].data = data.chart.saldo;
+                    lineChart.update('none');
+
+                    pieChart.data.datasets[0].data = data.chart.pie;
+                    pieChart.update('none');
+                }
+
+                document.getElementById('transactionTable').classList.remove('loading');
+                isLoading = false;
             })
             .catch(() => {
-                container.classList.remove('loading');
+                document.getElementById('transactionTable').classList.remove('loading');
                 isLoading = false;
-                showToast('Gagal memuat data transaksi', 'error');
+                showToast('Gagal memuat transaksi', 'error');
             });
         }
 
-        // === DELETE TRANSACTION + TOAST KEMBALI NORMAL ===
         function deleteTransaction(id) {
             fetch(`/transactions/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                }
-                return response.json();
-            })
+            .then(r => r.json())
             .then(res => {
-                loadTransactions();
                 showToast(res.message || 'Transaksi berhasil dihapus!', 'success');
+                loadTransactions();
             })
-            .catch(err => {
-                console.error(err);
-                showToast(err.message || 'Gagal menghapus transaksi', 'error');
-            })
+            .catch(() => showToast('Gagal menghapus transaksi', 'error'))
             .finally(() => {
                 document.getElementById('deleteModal').classList.add('hidden');
                 deleteId = null;
             });
         }
 
-        document.getElementById('confirmDelete').onclick = () => {
-            if (deleteId) deleteTransaction(deleteId);
-        };
-
+        document.getElementById('confirmDelete').onclick = () => deleteId && deleteTransaction(deleteId);
         document.getElementById('cancelDelete').onclick = () => {
             document.getElementById('deleteModal').classList.add('hidden');
             deleteId = null;
         };
 
-        // Toast (dengan efek glass yang bagus)
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `animate-slideIn p-4 rounded-xl shadow-2xl flex items-center gap-3 border backdrop-blur-md min-w-80 ${type === 'success' ? 'bg-green-950/70 border-green-500/50 text-green-200' : 'bg-red-950/70 border-red-500/50 text-red-200'}`;
-            toast.innerHTML = `
-                <span class="flex-1">${message}</span>
-                <button onclick="this.parentElement.remove()" class="text-current hover:opacity-70 text-xl leading-none">&times;</button>
-            `;
-            document.getElementById('toast-container').appendChild(toast);
-            
-            // Auto remove
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            toast.className = `animate-slideIn p-4 rounded-xl shadow-2xl flex items-center gap-3 border backdrop-blur-md min-w-80 fixed top-4 right-4 z-50 ${type === 'success' ? 'bg-green-950/70 border-green-500/50 text-green-200' : 'bg-red-950/70 border-red-500/50 text-red-200'}`;
+            toast.innerHTML = `<span class="flex-1">${message}</span><button onclick="this.parentElement.remove()" class="text-current hover:opacity-70 text-xl">&times;</button>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        function closeNotification(notificationId) {
-        const notification = document.getElementById(notificationId);
-        if (notification) {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 300);
-        }
-    }
-
-    // Auto-close notifikasi setelah 5 detik
-    document.addEventListener('DOMContentLoaded', function() {
-        const notification = document.getElementById('success-notification');
-        if (notification) {
-            setTimeout(() => {
-                closeNotification('success-notification');
-            }, 5000);
-        }
-    });
-
-
+        const notif = document.getElementById('success-notification');
+        if (notif) setTimeout(() => { notif.style.opacity = '0'; setTimeout(() => notif.style.display = 'none', 300); }, 5000);
     </script>
 </x-app-layout>
