@@ -47,7 +47,7 @@ class TransactionController extends Controller
         $totalPemasukan = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
         $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
         $totalUtang = Auth::user()->debts()->where('is_paid', false)->sum('amount');
-        $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
+        $saldo = $totalPemasukan - $totalPengeluaran;
 
         // Data chart 6 bulan
         $months = [];
@@ -178,7 +178,7 @@ class TransactionController extends Controller
         $totalPemasukan = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
         $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
         $totalUtang = Auth::user()->debts()->where('is_paid', false)->sum('amount');
-        $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
+        $saldo = $totalPemasukan - $totalPengeluaran;
 
         return response()->json([
             'success' => true,

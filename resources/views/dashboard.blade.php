@@ -162,30 +162,38 @@
                         Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
                     </p>
                 </div>
+
                 <!-- SALDO CARD -->
                 <div class="stat-card p-6 text-white">
-                    <h3 class="text-lg font-medium">Saldo</h3>
+                    <h3 class="text-lg font-medium">Saldo Saat Ini</h3>
                     <div id="saldo-container" class="mt-3 space-y-1">
-                        <p class="text-2xl font-bold leading-tight text-blue-300">
-                            Rp {{ number_format($saldo + $totalUtang, 0, ',', '.') }}
+                        <p class="text-3xl font-bold leading-tight text-blue-300 transition-all duration-700">
+                            Rp {{ number_format($saldo, 0, ',', '.') }}
                         </p>
                         @if($totalUtang > 0)
-                            <p class="text-xl font-bold leading-tight text-red-400">
-                                (- Rp {{ number_format($totalUtang, 0, ',', '.') }})
+                            <p class="text-xl font-bold leading-tight text-red-400 animate-pulse transition-all duration-700">
+                                (Kalau lunasi semua hutang saldo menjadi {{ $saldo - $totalUtang >= 0 ? 'Rp ' . number_format($saldo - $totalUtang, 0, ',', '.') : '- Rp ' . number_format(abs($saldo - $totalUtang), 0, ',', '.') }})
                             </p>
+                            @if($saldo - $totalUtang < 0)
+                                <p class="text-red-500 text-sm mt-2 font-bold animate-pulse">
+                                    ⚠️ SALDO AKAN NEGATIF KALAU LUNASI SEMUA BRO!
+                                </p>
+                            @endif
                         @endif
                     </div>
                 </div>
 
                 <!-- TOTAL UTANG CARD -->
-                <div class="stat-card p-6 text-white {{ $totalUtang > 0 ? 'border-red-500/40 bg-red-500/5' : '' }} transition-all duration-300">
-                    <h3 class="text-lg font-medium {{ $totalUtang > 0 ? 'text-red-300' : '' }}">Total Utang</h3>
+                <div class="stat-card p-6 text-white {{ $totalUtang > 0 ? 'border-red-500/50 bg-red-500/5' : '' }} transition-all duration-500">
+                    <h3 class="text-lg font-medium {{ $totalUtang > 0 ? 'text-red-300' : '' }}">Total Hutang Belum Lunas</h3>
                     <p id="total-utang" class="text-3xl font-bold text-red-400 mt-3 leading-tight">
-                        {{ $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0' }}
+                        Rp {{ number_format($totalUtang, 0, ',', '.') }}
                     </p>
-                    <p id="utang-warning" class="text-red-400 text-sm mt-2 opacity-80 animate-pulse {{ $totalUtang > 0 ? '' : 'hidden' }}">
-                        ▼ Harus segera dibayar!
-                    </p>
+                    @if($totalUtang > 0)
+                        <p class="text-red-400 text-sm mt-2 opacity-80 animate-pulse">
+                            ▼ Lunasi sekarang atau selamanya gelisah 💀
+                        </p>
+                    @endif
                 </div>
             </div>
 
@@ -394,7 +402,9 @@
         function loadTransactions() {
             if (isLoading) return;
             isLoading = true;
-            document.getElementById('transactionTable').classList.add('loading');
+
+            const container = document.getElementById('transactionTable');
+            container.classList.add('loading');
 
             const params = new URLSearchParams({
                 search: document.getElementById('search').value.trim(),
@@ -408,39 +418,57 @@
             })
             .then(r => r.json())
             .then(data => {
-                // Update table & pagination
-                document.getElementById('transactionTable').innerHTML = data.table;
+                // Update tabel & pagination
+                container.innerHTML = data.table;
                 document.getElementById('pagination').innerHTML = data.pagination;
 
-                // Update stat cards
+                // UPDATE STAT CARDS — INI YANG DI-FIX TOTAL (data sudah ada di scope ini)
                 document.getElementById('total-pemasukan').textContent = data.summary.totalPemasukan;
                 document.getElementById('total-pengeluaran').textContent = data.summary.totalPengeluaran;
 
-                // Saldo + Hutang (multi-line)
-                const baseSaldo = data.summary.saldo;
-                const utangVal = data.summary.totalUtang.replace('Rp ', '').trim();
-                const hasUtang = parseInt(utangVal.replace(/\D/g, '') || 0) > 0;
-
-                document.getElementById('saldo-container').innerHTML = `
-                    <p class="text-2xl font-bold leading-tight text-blue-300">${baseSaldo}</p>
-                    ${hasUtang ? `<p class="text-xl font-bold leading-tight text-red-400">(- Rp ${utangVal})</p>` : ''}
-                `;
+                // Saldo aktual (pemasukan - pengeluaran) — hutang GA NGURANGIN
+                const saldoAktual = data.summary.saldo; // ini 'Rp xxx' dari controller (saldo aktual tanpa hutang)
 
                 // Total Utang
-                document.getElementById('total-utang').textContent = hasUtang ? `- Rp ${utangVal}` : 'Rp 0';
+                const totalUtangStr = data.summary.totalUtang; // 'Rp xxx'
+                const utangVal = parseInt(totalUtangStr.replace(/\D/g, '') || 0);
+                const hasUtang = utangVal > 0;
 
-                // Border + warning
+                // Hitung preview kalau lunasi semua
+                const saldoSetelahLunasi = parseInt(saldoAktual.replace(/\D/g, '') || 0) - utangVal;
+
+                // Update saldo container (multi-line smooth)
+                const saldoContainer = document.getElementById('saldo-container');
+                saldoContainer.innerHTML = `
+                    <p class="text-3xl font-bold leading-tight text-blue-300 transition-all duration-700">
+                        ${saldoAktual}
+                    </p>
+                    ${hasUtang ? `
+                    <p class="text-xl font-bold leading-tight text-red-400 animate-pulse transition-all duration-700">
+                        (Kalau lunasi semua hutang saldo menjadi ${saldoSetelahLunasi >= 0 ? 'Rp ' + saldoSetelahLunasi.toLocaleString('id-ID') : 'MINUS😢 Rp ' + Math.abs(saldoSetelahLunasi).toLocaleString('id-ID')})
+                    </p>
+                    ${saldoSetelahLunasi < 0 ? `
+                    <p class="text-red-500 text-sm mt-2 font-bold animate-pulse">
+                        ⚠️ SALDO AKAN NEGATIF BRO!💀
+                    </p>` : ''}
+                    ` : ''}
+                `;
+
+                // Update Total Utang
+                document.getElementById('total-utang').textContent = hasUtang ? 'Rp ' + utangVal.toLocaleString('id-ID') : 'Rp 0';
+
+                // Border + bg card utang
                 const utangCard = document.getElementById('total-utang').closest('.stat-card');
                 const warning = document.getElementById('utang-warning');
                 if (hasUtang) {
-                    utangCard.classList.add('border-red-500/40', 'bg-red-500/5');
-                    warning.classList.remove('hidden');
+                    utangCard.classList.add('border-red-500/50', 'bg-red-500/5');
+                    if (warning) warning.classList.remove('hidden');
                 } else {
-                    utangCard.classList.remove('border-red-500/40', 'bg-red-500/5');
-                    warning.classList.add('hidden');
+                    utangCard.classList.remove('border-red-500/50', 'bg-red-500/5');
+                    if (warning) warning.classList.add('hidden');
                 }
 
-                // Update charts kalau sudah di-init
+                // Update charts kalau sudah init
                 if (chartsInitialized) {
                     barChart.data.labels = data.chart.months;
                     barChart.data.datasets[0].data = data.chart.pemasukan;
@@ -455,11 +483,12 @@
                     pieChart.update('none');
                 }
 
-                document.getElementById('transactionTable').classList.remove('loading');
+                container.classList.remove('loading');
                 isLoading = false;
             })
-            .catch(() => {
-                document.getElementById('transactionTable').classList.remove('loading');
+            .catch(err => {
+                console.error(err);
+                container.classList.remove('loading');
                 isLoading = false;
                 showToast('Gagal memuat transaksi', 'error');
             });
@@ -498,5 +527,11 @@
 
         const notif = document.getElementById('success-notification');
         if (notif) setTimeout(() => { notif.style.opacity = '0'; setTimeout(() => notif.style.display = 'none', 300); }, 5000);
+
+
+        
+
+
+
     </script>
 </x-app-layout>

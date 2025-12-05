@@ -44,10 +44,21 @@ class DebtController extends Controller
 
     public function update(Request $request, Debt $debt)
     {
-        // Melunasi hutang
         if ($debt->user_id !== auth()->id()) abort(403);
+
+        // Buat transaksi pengeluaran otomatis saat lunasi
+        auth()->user()->transactions()->create([
+            'type' => 'pengeluaran',
+            'amount' => $debt->amount,
+            'description' => 'Pelunasan hutang: ' . $debt->creditor . 
+                            ($debt->description ? ' - ' . $debt->description : ''),
+            'date' => now(),
+        ]);
+
+        // Update status lunas
         $debt->update(['is_paid' => true]);
-        return redirect()->route('debts.index')->with('success', 'Hutang berhasil dilunasi!');
+
+        return redirect()->route('debts.index')->with('success', 'Hutang berhasil dilunasi! Saldo telah dikurangi.');
     }
 
     public function destroy(Debt $debt)
