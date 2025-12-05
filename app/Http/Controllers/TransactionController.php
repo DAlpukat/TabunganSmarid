@@ -154,49 +154,41 @@ class TransactionController extends Controller
     {
         $transaction = Transaction::where('user_id', Auth::id())->find($id);
 
-        // Jika transaksi tidak ditemukan, cek di debts
         if (!$transaction) {
-            $debt = Debt::where('user_id', Auth::id())->find($id);
-            if (!$debt) {
-                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
-            }
-            $debt->delete();
-        } else {
-            $transaction->delete();
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
 
-        // Hitung ulang saldo
+        // Jika ini transaksi hutang → hapus debt terkait juga
+        if ($transaction->type === 'hutang') {
+            if (str_starts_with($transaction->description, '[Hutang ID:')) {
+                $endPos = strpos($transaction->description, ']');
+                if ($endPos !== false) {
+                    $debtId = substr($transaction->description, 11, $endPos - 11);
+                    $debt = Debt::where('id', $debtId)->where('user_id', Auth::id())->first();
+                    if ($debt) {
+                        $debt->delete();
+                    }
+                }
+            }
+        }
+
+        $transaction->delete();
+
+        // Hitung ulang (sama seperti sebelumnya)
         $totalPemasukan = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
         $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
         $totalUtang = Auth::user()->debts()->where('is_paid', false)->sum('amount');
-
-        $saldoGross = $totalPemasukan - $totalPengeluaran; // saldo sebelum dikurangi hutang
-        $saldoBersih = $saldoGross - $totalUtang;
-
-        // Format yang SIAP PAKAI langsung di innerHTML
-        $formattedSaldo = 'Rp ' . number_format($saldoGross, 0, ',', '.') . 
-            ($totalUtang > 0 ? ' <span class="text-red-400 font-bold">(- Rp ' . number_format($totalUtang, 0, ',', '.') . ')</span>' : '');
-
-        $formattedUtang = $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0';
+        $saldo = $totalPemasukan - $totalPengeluaran - $totalUtang;
 
         return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil dihapus',
-                'newSummary' => [
-                    'totalPemasukan' => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
-                    'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),
-                    
-                    // HTML full untuk saldo container (multi-line)
-                    'saldoHTML' => '<p class="text-2xl font-bold leading-tight ' . ($saldoBersih >= 0 ? 'text-blue-300' : 'text-red-400') . '">
-                                        Rp ' . number_format($saldoGross, 0, ',', '.') . 
-                                    '</p>' . 
-                                    ($totalUtang > 0 ? '<p class="text-xl font-bold leading-tight text-red-400">
-                                        (- Rp ' . number_format($totalUtang, 0, ',', '.') . ')
-                                    </p>' : ''),
-
-                    'totalUtang' => $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0',
-                    'hasUtang' => $totalUtang > 0,
-                ]
-            ]);
+            'success' => true,
+            'message' => 'Hutang berhasil dihapus permanen dari riwayat dan daftar hutang!',
+            'newSummary' => [
+                'totalPemasukan' => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
+                'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),
+                'totalUtang' => $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0',
+                'saldo' => 'Rp ' . number_format($saldo + $totalUtang, 0, ',', '.'),
+            ]
+        ]);
     }
 }

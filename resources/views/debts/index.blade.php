@@ -249,6 +249,20 @@
                                                 <span class="text-green-400 text-xs">-</span>
                                             @endif
                                         </td>
+                                        <td class="px-6 py-4 text-sm">
+                                            @if(!$debt->is_paid)
+                                                <form action="{{ route('debts.destroy', $debt) }}" method="POST" class="inline">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" 
+                                                            onclick="return confirm('Yakin HAPUS PERMANEN hutang ini?\nRiwayat transaksi hutang juga akan ikut terhapus!')"
+                                                            class="text-red-400 hover:text-red-600 text-xs font-semibold">
+                                                        Hapus Permanen
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-gray-500 text-xs">Sudah Lunas</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>

@@ -28,14 +28,14 @@ class DebtController extends Controller
         ]);
         $validated['is_paid'] = false;
 
-        // Simpan ke tabel debts
+        // Simpan ke debts
         $debt = auth()->user()->debts()->create($validated);
 
-        // Simpan juga ke tabel transactions agar muncul di riwayat
+        // Simpan ke transactions dengan ID debt di description (untuk sync hapus)
         auth()->user()->transactions()->create([
-            'type' => 'hutang', // atau 'pengeluaran' kalo mau aje si, cuma nanti terhitung sebagai pengeluaran
+            'type' => 'hutang',
             'amount' => $validated['amount'],
-            'description' => '[Hutang] ' . ($validated['description'] ?? 'Hutang ke ' . $validated['creditor']),
+            'description' => '[Hutang ID:' . $debt->id . '] ' . ($validated['description'] ?? 'Hutang ke ' . $validated['creditor']),
             'date' => $validated['due_date'] ?? now(),
         ]);
 
@@ -48,5 +48,24 @@ class DebtController extends Controller
         if ($debt->user_id !== auth()->id()) abort(403);
         $debt->update(['is_paid' => true]);
         return redirect()->route('debts.index')->with('success', 'Hutang berhasil dilunasi!');
+    }
+
+    public function destroy(Debt $debt)
+    {
+        $this->authorize('delete', $debt); // atau manual check
+        if ($debt->user_id !== auth()->id()) abort(403);
+
+        // Hapus transaksi hutang terkait (jika ada)
+        $transaction = auth()->user()->transactions()
+            ->where('type', 'hutang')
+            ->where('amount', $debt->amount)
+            ->whereDate('date', $debt->due_date ?? now())
+            ->first();
+
+        if ($transaction) $transaction->delete();
+
+        $debt->delete();
+
+        return redirect()->route('debts.index')->with('success', 'Hutang berhasil dihapus permanen!');
     }
 }
