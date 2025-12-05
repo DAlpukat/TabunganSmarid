@@ -49,6 +49,23 @@
                 padding: 0;
                 box-sizing: border-box;
             }
+            
+            /* ANTI KELUAR KOTAK + AUTO ENTER KELAS SIIIRRRR */
+            .line-clamp-4 {
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            
+            .glass-card:hover {
+                background: rgba(22, 101, 52, 0.25) !important;
+                border-color: rgba(34, 197, 94, 0.6) !important;
+            }
+
+
 
             body {
                 font-family: 'Instrument Sans', sans-serif;

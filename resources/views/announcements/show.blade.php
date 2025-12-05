@@ -181,20 +181,94 @@
             position: fixed;
             z-index: 1001;
         }
+
+
+        /* PROSE CUSTOM — INI YANG BIKIN TEKS PANJANG AUTO ENTER + GA KELUAR KOTAK */
+        .prose-custom {
+            color: #e1d5b5;
+            max-width: 100%;
+            line-height: 1.8;
+        }
+
+        .prose-custom p, 
+        .prose-custom h1, 
+        .prose-custom h2, 
+        .prose-custom h3, 
+        .prose-custom h4, 
+        .prose-custom ul, 
+        .prose-custom ol {
+            margin-bottom: 1.2rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .prose-custom img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .prose-custom a {
+            color: #34d399;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .prose-custom a:hover {
+            color: #10b981;
+        }
+
+        /* Mobile fix ekstra */
+        @media (max-width: 640px) {
+            .prose-custom {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* TEXT RATA KANAN KIRI (JUSTIFY) KAYAK KTI/WORD/GDOCS */
+        .justify-text {
+            text-align: justify !important;
+            text-justify: inter-word; /* biar spasi rapi banget */
+        }
+
+        /* Khusus paragraf */
+        .justify-text p {
+            text-align: justify !important;
+            text-justify: inter-word;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Heading tetap center atau left sesuai selera (aku biarin left biar rapi) */
+        .justify-text h1, 
+        .justify-text h2, 
+        .justify-text h3, 
+        .justify-text h4 {
+            text-align: left !important;
+            margin-bottom: 1.2rem;
+        }
     </style>
 
-    <div class="gradient-bg py-12 relative min-h-screen">
-        <div class="absolute inset-0 pattern-overlay"></div>
+    <div class="gradient-bg py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 relative z-10">
             <div class="glass-card p-6 md:p-8 text-white animate-fadeInUp">
                 @if($announcement->image_path)
                     <img src="{{ Storage::url($announcement->image_path) }}" alt="{{ $announcement->title }}" class="w-full h-64 md:h-96 object-cover rounded-md mb-6">
                 @endif
-                <h1 class="text-3xl md:text-4xl font-bold text-green-300 mb-4">{{ $announcement->title }}</h1>
-                <p class="text-sm text-gray-400 mb-6">Oleh {{ $announcement->user->name }} pada {{ $announcement->created_at->format('d F Y, H:i') }}</p>
                 
-                <div class="prose prose-invert max-w-none">
+                <h1 class="text-3xl md:text-4xl font-bold text-green-300 mb-4">{{ $announcement->title }}</h1>
+                <p class="text-sm text-gray-400 mb-8">Oleh {{ $announcement->user->name }} • {{ $announcement->created_at->format('d F Y, H:i') }}</p>
+                
+                <!-- INI YANG BARU — PROSE CUSTOM BIAR RESPONSIF 100% -->
+                <div class="prose-custom max-w-none ">
                     {!! $announcement->content !!}
+                </div>
+
+                <div class="mt-12">
+                    <a href="{{ route('announcements.public.index') }}" class="text-green-400 hover:text-green-300 text-sm font-medium">
+                        ← Kembali ke daftar berita
+                    </a>
                 </div>
             </div>
         </div>
