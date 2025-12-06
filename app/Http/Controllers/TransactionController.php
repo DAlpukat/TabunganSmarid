@@ -197,7 +197,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Hutang berhasil dihapus permanen dari riwayat dan daftar hutang!',
+            'message' => 'Riwayat Transaksi Berhasil Dihapus',
             'newSummary' => [
                 'totalPemasukan' => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
                 'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),
