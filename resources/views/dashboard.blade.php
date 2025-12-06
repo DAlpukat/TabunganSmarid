@@ -498,37 +498,61 @@
             fetch(`/transactions/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.json();
+            })
             .then(res => {
-                showToast(res.message || 'Hutang berhasil dihapus permanen!', 'success');
-
-                // UPDATE SEMUA CHART REALTIME TANPA REFRESH
-                if (chartsInitialized) {
-                    const newPieData = [
-                        parseInt(res.newSummary.totalPemasukan.replace(/\D/g, '') || 0),
-                        parseInt(res.newSummary.totalPengeluaran.replace(/\D/g, '') || 0),
-                        0  // hutang jadi 0 karena dihapus
-                    ];
-
-                    pieChart.data.datasets[0].data = newPieData;
-                    pieChart.update('none');
-
+                if (!res.success) {
+                    showToast('Gagal menghapus transaksi!', 'error');
+                    return;
                 }
 
-                loadTransactions(); // ini bikin semua realtime jadi sung apuzs
+                const message = res.message || 'Riwayat Transaksi Berhasil Dihapus';
+                showToast(message, 'success');
+
+                const row = document.querySelector(`#transaction-row-${id}`) || document.querySelector(`[data-transaction-id="${id}"]`);
+                if (row) {
+                    row.style.transition = 'all 0.4s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(-50px)';
+                    setTimeout(() => row.remove(), 400);
+                }
+
+                if (document.getElementById('total-pemasukan')) {
+                    document.getElementById('total-pemasukan').textContent = res.newSummary.totalPemasukan;
+                }
+                if (document.getElementById('total-pengeluaran')) {
+                    document.getElementById('total-pengeluaran').textContent = res.newSummary.totalPengeluaran;
+                }
+                if (document.getElementById('total-utang')) {
+                    document.getElementById('total-utang').textContent = res.newSummary.totalUtang;
+                }
+                if (document.getElementById('saldo')) {
+                    document.getElementById('saldo').textContent = res.newSummary.saldo;
+                }
+
+                if (typeof pieChart !== 'undefined' && pieChart) {
+                    const pemasukan = parseInt(res.newSummary.totalPemasukan.replace(/\D/g, '')) || 0;
+                    const pengeluaran = parseInt(res.newSummary.totalPengeluaran.replace(/\D/g, '')) || 0;
+                    const utangStr = res.newSummary.totalUtang;
+                    const utang = utangStr.includes('-') ? parseInt(utangStr.replace(/\D/g, '')) || 0 : 0;
+
+                    pieChart.data.datasets[0].data = [pemasukan, pengeluaran, utang];
+                    pieChart.update('none'); 
+                }
+
+                loadTransactions(); 
 
             })
             .catch(err => {
                 console.error(err);
-                showToast('Gagal menghapus hutang', 'error');
-            })
-            .finally(() => {
-                document.getElementById('deleteModal').classList.add('hidden');
-                deleteId = null;
+                showToast('Terjadi kesalahan saat menghapus!', 'error');
             });
         }
 

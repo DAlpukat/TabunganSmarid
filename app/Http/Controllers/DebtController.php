@@ -34,9 +34,10 @@ class DebtController extends Controller
         // Simpan ke transactions dengan ID debt di description (untuk sync hapus)
         auth()->user()->transactions()->create([
             'type' => 'hutang',
-            'amount' => $validated['amount'],
-            'description' => '[Hutang ID:' . $debt->id . '] ' . ($validated['description'] ?? 'Hutang ke ' . $validated['creditor']),
-            'date' => $validated['due_date'] ?? now(),
+            'amount' => $debt->amount,
+            'description' => '[Hutang: ' . $debt->creditor . ']' . ($debt->description ? ' - ' . $debt->description : ''),
+            'date' => $debt->due_date ?? now(),
+            'debt_id' => $debt->id, // BARU: SYNC SEMPURNA
         ]);
 
         return redirect()->route('debts.index')->with('success', 'Hutang berhasil ditambahkan!');
@@ -61,22 +62,17 @@ class DebtController extends Controller
         return redirect()->route('debts.index')->with('success', 'Hutang berhasil dilunasi! Saldo telah dikurangi.');
     }
 
-    public function destroy(Debt $debt)
+   public function destroy(Debt $debt)
     {
-        $this->authorize('delete', $debt); // atau manual check
-        if ($debt->user_id !== auth()->id()) abort(403);
-
-        // Hapus transaksi hutang terkait (jika ada)
-        $transaction = auth()->user()->transactions()
-            ->where('type', 'hutang')
-            ->where('amount', $debt->amount)
-            ->whereDate('date', $debt->due_date ?? now())
-            ->first();
-
-        if ($transaction) $transaction->delete();
-
+        
+        if ($debt->user_id !== auth()->id()) {
+            abort(403);
+        }
+        // Hapus debt, transaksi terkait akan terhapus otomatis via foreign key cascade
         $debt->delete();
 
-        return redirect()->route('debts.index')->with('success', 'Hutang berhasil dihapus permanen!');
+        return redirect()
+            ->route('debts.index')
+            ->with('success', 'Hutang berhasil dihapus permanen! Riwayat transaksi hutang juga ikut terhapus otomatis.');
     }
 }

@@ -20,20 +20,16 @@ class TransactionController extends Controller
     {
         $this->streakController->checkAndResetStreak();
 
-        // Query transaksi
         $query = Auth::user()->transactions();
 
-        // Search
         if ($search = $request->input('search')) {
             $query->where('description', 'like', "%{$search}%");
         }
 
-        // Filter type
         if ($type = $request->input('type')) {
             $query->where('type', $type);
         }
 
-        // Sorting
         $sortBy = $request->input('sort_by', 'date');
         $order = $request->input('order', 'desc');
         $allowedSort = ['date', 'amount', 'created_at'];
@@ -43,13 +39,11 @@ class TransactionController extends Controller
 
         $transactions = $query->paginate(15)->appends($request->query());
 
-        // Hitung ringkasan
         $totalPemasukan = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
         $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
         $totalUtang = Auth::user()->debts()->where('is_paid', false)->sum('amount');
         $saldo = $totalPemasukan - $totalPengeluaran;
 
-        // Data chart 6 bulan
         $months = [];
         $pemasukanData = [];
         $pengeluaranData = [];
@@ -72,13 +66,12 @@ class TransactionController extends Controller
                 ->whereYear('date', $date->year)
                 ->sum('amount');
 
-            $currentSaldo = $currentSaldo + $masuk - $keluar;
+            $currentSaldo += $masuk - $keluar;
             $pemasukanData[] = $masuk;
             $pengeluaranData[] = $keluar;
             $saldoData[] = $currentSaldo;
         }
 
-        // HANYA untuk AJAX request
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'table' => view('partials.transaction-table', compact('transactions'))->render(),
@@ -86,7 +79,7 @@ class TransactionController extends Controller
                 'summary' => [
                     'totalPemasukan' => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
                     'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),
-                    'totalUtang' => 'Rp ' . number_format($totalUtang, 0, ',', '.'),
+                    'totalUtang' => $totalUtang > 0 ? '- Rp ' . number_format($totalUtang, 0, ',', '.') : 'Rp 0',
                     'saldo' => 'Rp ' . number_format($saldo + $totalUtang, 0, ',', '.'),
                 ],
                 'chart' => [
@@ -99,7 +92,6 @@ class TransactionController extends Controller
             ]);
         }
 
-        // Untuk NON-AJAX request (normal page load)
         return view('dashboard', compact(
             'transactions',
             'totalPemasukan',
@@ -125,38 +117,35 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:1',
             'date' => 'required|date',
             'description' => 'nullable|string|max:255',
-            // Ubah dari required_if menjadi nullable, karena kategori opsional
             'category' => 'nullable|string|max:255',
         ]);
 
-        // Jika hutang → simpan ke debts
+        $category = ($validated['type'] === 'pengeluaran' && !empty($validated['category']))
+            ? trim($validated['category'])
+            : null;
+
+        // Buat transaksi dulu
+        $transaction = Auth::user()->transactions()->create([
+            'type' => $validated['type'],
+            'amount' => $validated['amount'],
+            'date' => $validated['date'],
+            'description' => $validated['description'] ?? null,
+            'category' => $category,
+        ]);
+
+        // Kalau hutang → buat debt dan link via debt_id
         if ($validated['type'] === 'hutang') {
-            Auth::user()->debts()->create([
+            $debt = Auth::user()->debts()->create([
                 'creditor' => $validated['description'] ?? 'Hutang',
                 'amount' => $validated['amount'],
                 'description' => $validated['description'],
                 'due_date' => $validated['date'],
                 'is_paid' => false,
             ]);
-        }
 
-        // Handle kategori - opsional untuk pengeluaran
-        $category = null;
-        if ($validated['type'] === 'pengeluaran') {
-            // Cek apakah ada input category dan tidak kosong
-            if (!empty($validated['category'])) {
-                $category = trim($validated['category']);
-            }
-            // Jika kosong atau null, biarkan null (pure pengeluaran tanpa kategori)
+            // Link transaksi dengan debt (INI YANG BIKIN SYNC SEMPURNA)
+            $transaction->update(['debt_id' => $debt->id]);
         }
-
-        Auth::user()->transactions()->create([
-            'type' => $validated['type'],
-            'amount' => $validated['amount'],
-            'date' => $validated['date'],
-            'description' => $validated['description'] ?? null,
-            'category' => $category, // Bisa null atau kategori terpilih
-        ]);
 
         if ($validated['type'] === 'pemasukan') {
             $this->streakController->updateStreakOnIncome();
@@ -167,21 +156,24 @@ class TransactionController extends Controller
 
     public function destroy($id)
     {
-        $transaction = Transaction::where('user_id', Auth::id())->find($id);
+        $transaction = Transaction::where('user_id', Auth::id())->findOrFail($id);
 
-        if (!$transaction) {
-            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
-        }
-
-        // Jika ini transaksi hutang → hapus debt terkait juga
+        // HAPUS DEBT JIKA INI TRANSAKSI HUTANG
         if ($transaction->type === 'hutang') {
-            if (str_starts_with($transaction->description, '[Hutang ID:')) {
-                $endPos = strpos($transaction->description, ']');
-                if ($endPos !== false) {
-                    $debtId = substr($transaction->description, 11, $endPos - 11);
-                    $debt = Debt::where('id', $debtId)->where('user_id', Auth::id())->first();
-                    if ($debt) {
-                        $debt->delete();
+            if ($transaction->debt_id) {
+                // Cara paling akurat & cepat (pakai foreign key)
+                optional(Debt::find($transaction->debt_id))->delete(); // cascade otomatis hapus transaksi juga, tapi kita udah delete manual
+            } else {
+                // Fallback untuk transaksi hutang lama (sebelum ada debt_id)
+                if ($transaction->description && str_starts_with($transaction->description, '[Hutang:')) {
+                    $endPos = strpos($transaction->description, ']');
+                    if ($endPos !== false) {
+                        $creditor = trim(substr($transaction->description, 8, $endPos - 8));
+                        Auth::user()->debts()
+                            ->where('creditor', 'like', "%{$creditor}%")
+                            ->where('amount', $transaction->amount)
+                            ->where('is_paid', false)
+                            ->first()?->delete();
                     }
                 }
             }
@@ -189,7 +181,7 @@ class TransactionController extends Controller
 
         $transaction->delete();
 
-        // Hitung ulang (sama seperti sebelumnya)
+        // Hitung ulang summary
         $totalPemasukan = Auth::user()->transactions()->where('type', 'pemasukan')->sum('amount');
         $totalPengeluaran = Auth::user()->transactions()->where('type', 'pengeluaran')->sum('amount');
         $totalUtang = Auth::user()->debts()->where('is_paid', false)->sum('amount');
@@ -198,6 +190,7 @@ class TransactionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Riwayat Transaksi Berhasil Dihapus',
+            'deletedTransactionId' => $transaction->id,
             'newSummary' => [
                 'totalPemasukan' => 'Rp ' . number_format($totalPemasukan, 0, ',', '.'),
                 'totalPengeluaran' => 'Rp ' . number_format($totalPengeluaran, 0, ',', '.'),

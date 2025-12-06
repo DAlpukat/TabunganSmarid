@@ -15,7 +15,8 @@ class Transaction extends Model
         'amount',
         'description',
         'date',
-        'category'
+        'category',
+        'debt_id', // TAMBAH INI
     ];
 
     protected $casts = [
