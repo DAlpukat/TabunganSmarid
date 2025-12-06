@@ -316,7 +316,7 @@
 
     <div class="auth-container">
         <div class="logo">
-            <div class="logo-text">DEGODEGA</div>
+            <div class="logo-text">MONETIX</div>
         </div>
 
         <h2>Welcome Back</h2>
