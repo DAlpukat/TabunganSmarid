@@ -497,14 +497,35 @@
         function deleteTransaction(id) {
             fetch(`/transactions/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
             })
-            .then(r => r.json())
+            .then(response => response.json())
             .then(res => {
-                showToast(res.message || 'Transaksi berhasil dihapus!', 'success');
-                loadTransactions();
+                showToast(res.message || 'Hutang berhasil dihapus permanen!', 'success');
+
+                // UPDATE SEMUA CHART REALTIME TANPA REFRESH
+                if (chartsInitialized) {
+                    const newPieData = [
+                        parseInt(res.newSummary.totalPemasukan.replace(/\D/g, '') || 0),
+                        parseInt(res.newSummary.totalPengeluaran.replace(/\D/g, '') || 0),
+                        0  // hutang jadi 0 karena dihapus
+                    ];
+
+                    pieChart.data.datasets[0].data = newPieData;
+                    pieChart.update('none');
+
+                }
+
+                loadTransactions(); // ini bikin semua realtime jadi sung apuzs
+
             })
-            .catch(() => showToast('Gagal menghapus transaksi', 'error'))
+            .catch(err => {
+                console.error(err);
+                showToast('Gagal menghapus hutang', 'error');
+            })
             .finally(() => {
                 document.getElementById('deleteModal').classList.add('hidden');
                 deleteId = null;

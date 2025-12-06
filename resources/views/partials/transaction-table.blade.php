@@ -170,12 +170,10 @@
                 <td class="px-6 py-4 text-sm text-gray-200">
                     @php
                         $desc = $transaction->description ?? '-';
-                        
-                        // HILANGKAN [Hutang ID:xx] DARI TAMPILAN (khusus hutang)
                         if ($transaction->type === 'hutang' && str_starts_with($desc, '[Hutang ID:')) {
                             $endPos = strpos($desc, '] ');
                             if ($endPos !== false) {
-                                $desc = substr($desc, $endPos + 2); // potong dari setelah "] "
+                                $desc = substr($desc, $endPos + 2);
                             }
                         }
                     @endphp
