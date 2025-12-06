@@ -80,121 +80,85 @@
                                     $percentage = $budget->percentage;
                                 @endphp
                                 
-                                <div class="glass-card p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl
-                                    {{ $percentage >= 100 ? 'border-red-500 bg-gradient-to-r from-red-900/20 to-red-800/10' : 
-                                       ($percentage >= 80 ? 'border-orange-500 bg-gradient-to-r from-orange-900/20 to-orange-800/10' : 
-                                       'border-green-500/30 bg-gradient-to-r from-green-900/10 to-green-800/5') }}">
-                                    
+                                <div class="glass-card p-6 rounded-2xl border-4 transition-all duration-500 hover:scale-105
+                                    {{ $remaining < 0 ? 'border-red-600 shadow-2xl shadow-red-500/30' : 
+                                       ($remaining == 0 ? 'border-orange-600 shadow-2xl shadow-orange-500/40' : 
+                                       'border-green-500/40') }}">
+
                                     <!-- Header Kategori -->
                                     <div class="flex justify-between items-start mb-6">
                                         <div class="flex-1">
                                             <div class="flex items-center gap-3 mb-2">
-                                                <span class="text-2xl font-bold text-green-300">{{ $budget->category }}</span>
-                                                @if($percentage >= 100)
-                                                    <span class="bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm font-bold animate-pulse">
-                                                        OVER LIMIT
+                                                <span class="text-3xl font-black text-green-300">{{ $budget->category }}</span>
+                                                @if($remaining < 0)
+                                                    <span class="bg-red-600 text-white px-4 py-2 rounded-full text-lg font-black animate-pulse">
+                                                        LIMIT!!
                                                     </span>
-                                                @elseif($percentage >= 80)
-                                                    <span class="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm font-bold">
-                                                        HAMPIR HABIS
+                                                @elseif($remaining == 0)
+                                                    <span class="bg-orange-600 text-white px-4 py-2 rounded-full text-lg font-black animate-pulse">
+                                                        HABIS TOTAL
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="flex items-center gap-4 text-gray-400">
-                                                <span class="flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                    </svg>
-                                                    Anggaran: Rp {{ number_format($budget->amount, 0, ',', '.') }}
-                                                </span>
-                                                <span class="flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    Terpakai: {{ number_format($percentage, 1) }}%
-                                                </span>
+                                            <div class="flex items-center gap-6 text-gray-300 text-lg">
+                                                <span>Anggaran: <strong class="text-green-300">Rp {{ number_format($budget->amount, 0, ',', '.') }}</strong></span>
+                                                <span>Terpakai: <strong class="{{ $percentage >= 100 ? 'text-red-400' : 'text-orange-300' }}">{{ number_format($percentage, 1) }}%</strong></span>
                                             </div>
                                         </div>
                                         <form action="{{ route('budgets.destroy', $budget) }}" method="POST" onsubmit="return confirm('Hapus anggaran {{ $budget->category }}?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-gray-400 hover:text-red-400 transition-colors p-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
                                         </form>
                                     </div>
 
-                                    <!-- Progress Bar dengan Detail -->
-                                    <div class="space-y-4">
-                                        <div>
-                                            <div class="flex justify-between text-lg mb-2">
-                                                <div>
-                                                    <span class="text-gray-300">Terpakai: </span>
-                                                    <span class="font-bold {{ $percentage >= 100 ? 'text-red-400' : 'text-green-300' }}">
-                                                        Rp {{ number_format($budget->spent, 0, ',', '.') }}
-                                                    </span>
-                                                </div>
-                                                <div class="text-right">
-                                                    @if($remaining >= 0)
-                                                        <span class="text-gray-300">Sisa: </span>
-                                                        <span class="font-bold text-green-300">
-                                                            Rp {{ number_format($remaining, 0, ',', '.') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-red-300 font-bold">
-                                                            Kekurangan: Rp {{ number_format(abs($remaining), 0, ',', '.') }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="w-full bg-gray-800 rounded-full h-4 overflow-hidden shadow-inner">
-                                                <div class="h-full rounded-full transition-all duration-1000 ease-out relative
-                                                    {{ $percentage >= 100 ? 'bg-gradient-to-r from-red-500 to-red-600' : 
-                                                       ($percentage >= 80 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
-                                                       'bg-gradient-to-r from-green-500 to-green-400') }}"
-                                                     style="width: {{ min($percentage, 100) }}%">
-                                                    @if($percentage >= 80 && $percentage < 100)
-                                                        <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                                    @endif
-                                                </div>
+                                    <!-- Progress Bar -->
+                                    <div class="mb-6">
+                                        <div class="flex justify-between text-xl font-bold mb-3">
+                                            <span class="text-green-300">Rp {{ number_format($budget->spent, 0, ',', '.') }}</span>
+                                            <span class="{{ $remaining >= 0 ? 'text-green-300' : 'text-red-400' }}">
+                                                {{ $remaining >= 0 ? 'Sisa Rp ' . number_format($remaining, 0, ',', '.') : 'Over Rp ' . number_format(abs($remaining), 0, ',', '.') }}
+                                            </span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 rounded-full h-6 overflow-hidden shadow-inner">
+                                            <div class="h-full rounded-full transition-all duration-1000 ease-out relative flex items-center justify-end pr-4 text-white font-bold text-lg
+                                                {{ $remaining < 0 ? 'bg-gradient-to-r from-red-600 to-red-700' : 
+                                                   ($remaining == 0 ? 'bg-gradient-to-r from-orange-600 to-orange-700' : 
+                                                   'bg-gradient-to-r from-green-500 to-green-400') }}"
+                                                 style="width: {{ min($percentage, 100) }}%">
+                                                @if($remaining == 0 || $remaining < 0)
+                                                    <span class="animate-pulse">!!</span>
+                                                @endif
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Status -->
-                                        <div class="pt-4 border-t border-gray-700">
-                                            @if($percentage >= 100)
-                                                <div class="text-center">
-                                                    <p class="text-red-400 text-xl font-bold animate-pulse flex items-center justify-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        MELEBIHI ANGGARAN
-                                                    </p>
-                                                    <p class="text-red-300 mt-2">Kurangi pengeluaran atau revisi anggaran</p>
-                                                </div>
-                                            @elseif($percentage >= 80)
-                                                <div class="text-center">
-                                                    <p class="text-orange-400 text-lg font-bold flex items-center justify-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                                        </svg>
-                                                        Hampir Habis
-                                                    </p>
-                                                    <p class="text-orange-300">Sisa Rp {{ number_format($remaining, 0, ',', '.') }} lagi</p>
-                                                </div>
-                                            @else
-                                                <div class="text-center">
-                                                    <p class="text-green-400 text-lg font-bold flex items-center justify-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        Masih Aman
-                                                    </p>
-                                                    <p class="text-gray-300">Sisa dana Rp {{ number_format($remaining, 0, ',', '.') }}</p>
-                                                </div>
-                                            @endif
-                                        </div>
+                                    <!-- PESAN GALAK SESUAI REQUEST -->
+                                    <div class="text-center py-6 border-t-2 border-gray-700">
+                                        @if($remaining == 0)
+                                            <p class="text-3xl font-black text-orange-500 animate-pulse tracking-wider">
+                                                JANGAN SPENDING LAGI DI KATEGORI INI! 😤
+                                            </p>
+                                            <p class="text-orange-300 text-lg mt-2">Limit {{ $budget->category }} sudah habis total. Tahan diri!</p>
+                                        @elseif($remaining < 0)
+                                            <p class="text-5xl font-black text-red-500 animate-pulse tracking-widest drop-shadow-lg">
+                                                LIMIT!! 🚨🚨🚨
+                                            </p>
+                                            <p class="text-red-400 text-2xl font-bold mt-3">
+                                                Over Rp {{ number_format(abs($remaining), 0, ',', '.') }}
+                                            </p>
+                                            <p class="text-red-300 text-lg">Kamu boros banget. Serius, stop dulu belanja di {{ strtolower($budget->category) }}!</p>
+                                        @else
+                                            <p class="text-green-400 text-xl font-bold flex items-center justify-center gap-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Masih Aman • Sisa Rp {{ number_format($remaining, 0, ',', '.') }}
+                                            </p>
+                                        @endif
                                     </div>
                                 </div>
                             @empty
@@ -212,101 +176,54 @@
                     </div>
                 </div>
 
-                <!-- Ringkasan Bulan Ini -->
+                <!-- Ringkasan Bulan Ini (JUGA DIUPDATE GALAK) -->
                 <div class="lg:col-span-1">
-                    <div class="glass-card p-8 sticky border-2 {{ $totalBudget - $totalSpent >= 0 ? 'border-green-500/50' : 'border-red-500/50 bg-gradient-to-b from-red-900/10 to-red-800/5' }}">
-                        <h2 class="text-2xl font-bold text-green-300 mb-8 flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
+                    <div class="glass-card p-8 sticky top-6 border-4 {{ $totalBudget - $totalSpent >= 0 ? 'border-green-500/50' : 'border-red-600 shadow-2xl shadow-red-500/40' }}">
+                        <h2 class="text-3xl font-black text-green-300 mb-8 text-center">
                             Ringkasan Bulan Ini
                         </h2>
                         
                         <div class="space-y-8">
-                            <!-- Total Anggaran -->
-                            <div class="glass-card p-5 border border-green-500/20">
-                                <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    TOTAL ANGGARAN
-                                </p>
-                                <p class="text-3xl font-bold text-green-300">
-                                    Rp {{ number_format($totalBudget, 0, ',', '.') }}
-                                </p>
-                                <p class="text-gray-400 text-sm mt-2">{{ $budgets->count() }} kategori anggaran</p>
+                            <div class="text-center">
+                                <p class="text-gray-400 text-lg">Total Anggaran</p>
+                                <p class="text-4xl font-black text-green-300">Rp {{ number_format($totalBudget, 0, ',', '.') }}</p>
                             </div>
                             
-                            <!-- Total Terpakai -->
-                            <div class="glass-card p-5 border border-orange-500/20">
-                                <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    TOTAL TERPAKAI
-                                </p>
-                                <p class="text-3xl font-bold {{ $totalSpent > $totalBudget ? 'text-red-400' : 'text-orange-300' }}">
+                            <div class="text-center">
+                                <p class="text-gray-400 text-lg">Total Terpakai</p>
+                                <p class="text-4xl font-black {{ $totalSpent > $totalBudget ? 'text-red-400' : 'text-orange-300' }}">
                                     Rp {{ number_format($totalSpent, 0, ',', '.') }}
                                 </p>
-                                <p class="text-gray-400 text-sm mt-2">
-                                    {{ $totalBudget > 0 ? number_format(($totalSpent / $totalBudget) * 100, 1) : '0' }}% dari total anggaran
-                                </p>
                             </div>
-                            
-                            <!-- Saldo Anggaran -->
-                            <div class="glass-card p-5 border {{ $totalBudget - $totalSpent >= 0 ? 'border-green-500/30' : 'border-red-500/30' }}">
-                                <p class="text-gray-400 text-sm mb-1 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    SALDO ANGGARAN
-                                </p>
-                                @php
-                                    $balance = $totalBudget - $totalSpent;
-                                @endphp
-                                
-                                @if($balance >= 0)
-                                    <p class="text-4xl font-bold text-green-300">
-                                        Rp {{ number_format($balance, 0, ',', '.') }}
-                                    </p>
-                                    <div class="flex items-center gap-2 mt-3 text-green-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                                        </svg>
-                                        <span class="font-medium">Masih tersedia</span>
-                                    </div>
-                                    <p class="text-gray-400 text-sm mt-2">Anggaran bulan ini masih aman</p>
+
+                            @php $saldoAnggaran = $totalBudget - $totalSpent; @endphp
+
+                            <div class="text-center py-8 rounded-2xl {{ $saldoAnggaran >= 0 ? 'bg-green-900/30' : 'bg-red-900/40' }}">
+                                @if($saldoAnggaran > 0)
+                                    <p class="text-5xl font-black text-green-400">Rp {{ number_format($saldoAnggaran, 0, ',', '.') }}</p>
+                                    <p class="text-green-300 text-xl mt-3">Masih Aman Bro ✓</p>
+                                @elseif($saldoAnggaran == 0)
+                                    <p class="text-5xl font-black text-orange-500 animate-pulse">JANGAN SPENDING LAGI BULAN INI!</p>
+                                    <p class="text-orange-300 text-xl mt-4">Anggaran pas-pasan habis. Tahan nafsu belanja!</p>
                                 @else
-                                    <p class="text-4xl font-bold text-red-400">
-                                        - Rp {{ number_format(abs($balance), 0, ',', '.') }}
+                                    <p class="text-6xl font-black text-red-500 animate-pulse tracking-widest drop-shadow-2xl">
+                                        LIMIT!! 🚨
                                     </p>
-                                    <div class="flex items-center gap-2 mt-3 text-red-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                                        </svg>
-                                        <span class="font-bold">MELEBIHI ANGGARAN</span>
-                                    </div>
-                                    <p class="text-red-300 text-sm mt-2">Anda telah melebihi anggaran bulan ini</p>
+                                    <p class="text-red-400 text-3xl font-bold mt-4">
+                                        Over Rp {{ number_format(abs($saldoAnggaran), 0, ',', '.') }}
+                                    </p>
+                                    <p class="text-red-300 text-lg mt-3">Kamu boros parah bulan ini. Serius nyesel nanti.</p>
                                 @endif
                             </div>
                         </div>
 
                         <!-- Tips -->
-                        <div class="mt-10 pt-6 border-t border-gray-700">
-                            <p class="text-gray-400 text-sm mb-3">💡 Tips:</p>
-                            <ul class="space-y-2 text-sm text-gray-300">
-                                <li class="flex items-start gap-2">
-                                    <span class="text-green-400">✓</span>
-                                    <span>Periksa anggaran sebelum melakukan pengeluaran besar</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <span class="text-green-400">✓</span>
-                                    <span>Gunakan kategori yang konsisten</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <span class="text-green-400">✓</span>
-                                    <span>Review anggaran di tengah bulan</span>
-                                </li>
+                        <div class="mt-10 pt-8 border-t-2 border-gray-700">
+                            <p class="text-gray-400 text-sm mb-4 text-center font-bold">💀 MONETIX NGOMONG:</p>
+                            <ul class="space-y-3 text-gray-300 text-center">
+                                <li class="flex items-center justify-center gap-2"><span class="text-green-400 text-2xl">✓</span> <span>Konsisten kategori = akurat tracking</span></li>
+                                <li class="flex items-center justify-center gap-2"><span class="text-green-400 text-2xl">✓</span> <span>Cek anggaran sebelum gesek kartu</span></li>
+                                <li class="flex items-center justify-center gap-2"><span class="text-green-400 text-2xl">✓</span> <span>Over budget = malu sama MONETIX</span></li>
                             </ul>
                         </div>
                     </div>
