@@ -465,7 +465,7 @@
                         </div>
                         
                         <div class="flex items-center space-x-6">
-                            <a href="https://wa.me/085386605967" class="text-sm text-[#e1d5b5] hover:text-[#d2c39a] transition-colors opacity-80 hover:opacity-100">
+                            <a href="https://wa.me/6285386605967" class="text-sm text-[#e1d5b5] hover:text-[#d2c39a] transition-colors opacity-80 hover:opacity-100">
                                 Beri Saran
                             </a>
                             <a href="https://smaridasa.com" target="_blank" class="text-sm text-[#e1d5b5] hover:text-[#d2c39a] transition-colors opacity-80 hover:opacity-100">
