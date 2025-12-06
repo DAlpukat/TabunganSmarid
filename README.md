@@ -1,3 +1,60 @@
+# MONETIX - Financial Tracker Paling Galak di Indonesia 🔥
+
+Aplikasi keuangan pribadi dengan fitur lengkap, aesthetic glassmorphism, anggaran yang ngomel kalau over, hutang auto-sync, streak harian, dan admin panel.
+
+## Fitur Utama
+
+-   Catat pemasukan & pengeluaran realtime
+-   Anggaran per kategori (kalau over bakal teriak "LIMIT!!" 😈)
+-   Hutang sync dua arah (hapus dari riwayat = hilang dari daftar hutang)
+-   Streak harian (biar rajin catat tiap hari)
+-   Announcement (admin bisa broadcast berita)
+-   Admin panel (kelola user)
+-   Glassmorphism + gradient super cakep
+-   Full AJAX (hapus, search, filter tanpa reload)
+
+## Cara Install (Cuma 5 Menit!)
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/DAlpukat/TabunganSmarid
+cd ke foldernya
+
+2. Install Dependencies
+(bisa pakai git Bash)
+composer install
+npm install
+npm run build
+
+3. Download File Pendukung
+Klik link Google Drive ini:
+👉 chat saya untuk meminta link gdrive (IG:diegopryata)
+Di dalamnya ada 2 file:
+
+.env (sudah diisi semua konfigurasi)
+.sql (database lengkap dengan admin & contoh data)
+
+4. Buat Database
+Buka phpMyAdmin atau HeidiSQL, buat database baru bernama:
+laravel12_breeze
+
+5. Import Database
+Import file .sql yang sudah kamu download tadi.
+
+6. Taruh File .env
+Copy file .env dari Google Drive, taruh di root folder project.
+
+7. Jalankan
+Run composer run dev di terminal foldernya.
+
+Login Admin (Sudah Siap Pakai!)
+Email     : admin@gmail.com
+Password  : tes12345
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -59,3 +116,4 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
