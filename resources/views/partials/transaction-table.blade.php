@@ -168,7 +168,18 @@
                     {{ $transaction->type === 'pemasukan' ? '+' : '-' }}{{ $transaction->formatted_amount }}
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-200">
-                    {{ $transaction->description ?? '-' }}
+                    @php
+                        $desc = $transaction->description ?? '-';
+                        
+                        // HILANGKAN [Hutang ID:xx] DARI TAMPILAN (khusus hutang)
+                        if ($transaction->type === 'hutang' && str_starts_with($desc, '[Hutang ID:')) {
+                            $endPos = strpos($desc, '] ');
+                            if ($endPos !== false) {
+                                $desc = substr($desc, $endPos + 2); // potong dari setelah "] "
+                            }
+                        }
+                    @endphp
+                    {{ $desc ?: '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button onclick="deleteTransaction({{ $transaction->id }})"
