@@ -122,12 +122,14 @@ class TransactionController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:pemasukan,pengeluaran,hutang',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'date' => 'required|date',
-            'description' => 'nullable|string|max:255'
+            'description' => 'nullable|string|max:255',
+            // Ubah dari required_if menjadi nullable, karena kategori opsional
+            'category' => 'nullable|string|max:255',
         ]);
 
-        // Jika hutang → simpan ke debts + transactions
+        // Jika hutang → simpan ke debts
         if ($validated['type'] === 'hutang') {
             Auth::user()->debts()->create([
                 'creditor' => $validated['description'] ?? 'Hutang',
@@ -138,16 +140,29 @@ class TransactionController extends Controller
             ]);
         }
 
-        // Simpan transaksi
-        $transaction = Auth::user()->transactions()->create($validated);
+        // Handle kategori - opsional untuk pengeluaran
+        $category = null;
+        if ($validated['type'] === 'pengeluaran') {
+            // Cek apakah ada input category dan tidak kosong
+            if (!empty($validated['category'])) {
+                $category = trim($validated['category']);
+            }
+            // Jika kosong atau null, biarkan null (pure pengeluaran tanpa kategori)
+        }
 
-        // Update streak hanya jika pemasukan
+        Auth::user()->transactions()->create([
+            'type' => $validated['type'],
+            'amount' => $validated['amount'],
+            'date' => $validated['date'],
+            'description' => $validated['description'] ?? null,
+            'category' => $category, // Bisa null atau kategori terpilih
+        ]);
+
         if ($validated['type'] === 'pemasukan') {
             $this->streakController->updateStreakOnIncome();
         }
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Transaksi berhasil ditambahkan!');
+        return redirect()->route('dashboard')->with('success', 'Transaksi berhasil ditambahkan!');
     }
 
     public function destroy($id)

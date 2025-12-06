@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->hasMany(Announcement::class);
     }
 
+    public function budgets()
+    {
+        return $this->hasMany(\App\Models\Budget::class);
+    }
+
     // Avatar accessor (biar gampang di blade)
     public function getAvatarUrlAttribute()
     {

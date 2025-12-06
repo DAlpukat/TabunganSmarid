@@ -510,7 +510,7 @@
 
                 <section class="logo-section">
                     <div class="logo-pattern"></div>
-                    <div class="laravel-logo">DEGODEGA</div>
+                    <div class="laravel-logo">MONETIX</div>
                 </section>
             </main>
         </div>

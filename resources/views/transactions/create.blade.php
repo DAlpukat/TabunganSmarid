@@ -6,59 +6,126 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <form method="POST" action="{{ route('transactions.store') }}">
-                        @csrf
-                        
-                        <!-- Jenis Transaksi -->
-                        <div class="mb-4">
-                            <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Jenis Transaksi
-                            </label>
-                            <select id="type" name="type" class="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">-- Pilih Jenis --</option>
-                                <option value="pemasukan">Pemasukan</option>
-                                <option value="pengeluaran">Pengeluaran</option>
-                            </select>
-                        </div>
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="glass-card p-8">
+                <form method="POST" action="{{ route('transactions.store') }}" class="space-y-8">
+                    @csrf
 
-                        <!-- Jumlah -->
-                        <div class="mb-4">
-                            <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Jumlah (Rp)
-                            </label>
-                            <input id="amount" name="amount" type="number" min="0" class="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                        </div>
+                    <!-- Jenis Transaksi -->
+                    <div>
+                        <label for="type" class="block text-lg font-medium text-gray-300 mb-3">
+                            Jenis Transaksi
+                        </label>
+                        <select id="type" name="type" required class="w-full px-6 py-4 rounded-xl bg-gray-800/70 border border-gray-600 text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all text-lg">
+                            <option value="">-- Pilih Jenis --</option>
+                            <option value="pemasukan">Pemasukan</option>
+                            <option value="pengeluaran">Pengeluaran</option>
+                            <option value="hutang">Hutang</option>
+                        </select>
+                    </div>
 
-                        <!-- Tanggal -->
-                        <div class="mb-4">
-                            <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Tanggal
+                    
+                    <!-- KATEGORI PENGELUARAN - OPSIONAL -->
+                    <div id="category-field" style="display: none;">
+                        <div class="space-y-3">
+                            <label for="category" class="block text-lg font-medium text-gray-300">
+                                Kategori Pengeluaran <span class="text-blue-400 font-medium">(Opsional - hanya jika sesuai anggaran)</span>
                             </label>
-                            <input id="date" name="date" type="date" class="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                        </div>
 
-                        <!-- Deskripsi -->
-                        <div class="mb-4">
-                            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Deskripsi (Opsional)
-                            </label>
-                            <textarea id="description" name="description" rows="3" class="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"></textarea>
-                        </div>
+                            @php
+                                $budgetCategories = auth()->user()->budgets()
+                                    ->where('month', now()->month)
+                                    ->where('year', now()->year)
+                                    ->orderBy('category')
+                                    ->pluck('category')
+                                    ->unique()
+                                    ->values();
+                            @endphp
 
-                        <div class="flex items-center justify-end">
-                            <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md mr-2">
-                                Batal
-                            </a>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">
-                                Simpan Transaksi
-                            </button>
+                            @if($budgetCategories->count() > 0)
+                                <select name="category" id="category" class="w-full px-6 py-4 rounded-xl bg-gray-800/70 border border-gray-600 text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all text-lg">
+                                    <option value="">-- Pilih Kategori (Opsional) --</option>
+                                    <option value="">Tanpa Kategori (Pure Pengeluaran)</option>
+                                    @foreach($budgetCategories as $cat)
+                                        <option value="{{ $cat }}">{{ $cat }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="space-y-2 mt-3">
+                                    <p class="text-green-400 text-sm font-medium">
+                                        ✓ Jika memilih kategori, pengeluaran akan masuk ke "terpakai" di anggaran
+                                    </p>
+                                    <p class="text-blue-400 text-sm font-medium">
+                                        ✓ Jika tidak memilih kategori, pengeluaran akan dicatat sebagai pure pengeluaran
+                                    </p>
+                                </div>
+                            @else
+                                <div class="bg-blue-900/50 border-2 border-blue-500 text-blue-200 px-6 py-5 rounded-xl">
+                                    <p class="text-lg font-bold mb-2">Belum ada anggaran bulan ini</p>
+                                    <p class="mb-4">Pengeluaran akan dicatat sebagai pure pengeluaran tanpa kategori.</p>
+                                    <!-- Tambahkan hidden input untuk kategori kosong -->
+                                    <input type="hidden" name="category" value="">
+                                    <a href="{{ route('budgets.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-medium transition-colors">
+                                        Buat Anggaran (Opsional) →
+                                    </a>
+                                </div>
+                            @endif
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Jumlah -->
+                    <div>
+                        <label for="amount" class="block text-lg font-medium text-gray-300 mb-3">
+                            Jumlah (Rp)
+                        </label>
+                        <input type="number" name="amount" required min="1" placeholder="100000"
+                               class="w-full px-6 py-4 rounded-xl bg-gray-800/70 border border-gray-600 text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all text-lg">
+                    </div>
+
+                    <!-- Tanggal -->
+                    <div>
+                        <label for="date" class="block text-lg font-medium text-gray-300 mb-3">
+                            Tanggal Transaksi
+                        </label>
+                        <input type="date" name="date" required value="{{ old('date', now()->format('Y-m-d')) }}"
+                               class="w-full px-6 py-4 rounded-xl bg-gray-800/70 border border-gray-600 text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all text-lg">
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <label for="description" class="block text-lg font-medium text-gray-300 mb-3">
+                            Deskripsi (Opsional)
+                        </label>
+                        <textarea name="description" rows="4" placeholder="ex: Bensin motor, belanja bulanan"
+                                  class="w-full px-6 py-4 rounded-xl bg-gray-800/70 border border-gray-600 text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all text-lg resize-none"></textarea>
+                    </div>
+
+                    <!-- Tombol -->
+                    <div class="flex justify-end gap-6 pt-8">
+                        <a href="{{ route('dashboard') }}" class="px-10 py-4 bg-gray-700 text-gray-300 rounded-xl hover:bg-gray-600 transition-all font-bold text-lg">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-12 py-4 btn-primary text-xl font-bold hover:scale-105 transition-all shadow-xl">
+                            Simpan Transaksi
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        const typeSelect = document.getElementById('type');
+        const categoryField = document.getElementById('category-field');
+
+        function toggleCategory() {
+            if (typeSelect.value === 'pengeluaran') {
+                categoryField.style.display = 'block';
+            } else {
+                categoryField.style.display = 'none';
+            }
+        }
+
+        typeSelect.addEventListener('change', toggleCategory);
+        toggleCategory(); // jalankan saat load
+    </script>
 </x-app-layout>

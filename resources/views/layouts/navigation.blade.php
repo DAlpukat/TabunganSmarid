@@ -7,7 +7,7 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
                         <x-application-logo class="block h-9 w-auto fill-current text-[#e1d5b5]" />
-                        <span class="text-xl font-bold gradient-text">DEGODEGA</span>
+                        <span class="text-xl font-bold gradient-text">MONETIX</span>
                     </a>
                 </div>
 
@@ -18,6 +18,12 @@
                     </x-nav-link>
                     <x-nav-link :href="route('debts.index')" :active="request()->routeIs('debts.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Hutang') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('budgets.index')" :active="request()->routeIs('budgets.*')">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Anggaran
                     </x-nav-link>
                     <x-nav-link href="{{ route('announcements.public.index') }}" :active="request()->routeIs('announcements.public.index')" class="text-[#e1d5b5] hover:text-[#d2c39a] transition-colors">
                         {{ __('Berita') }}

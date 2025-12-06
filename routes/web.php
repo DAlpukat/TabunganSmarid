@@ -7,7 +7,7 @@ use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnnouncementController;
-
+use App\Http\Controllers\BudgetController;
 /*
 |--------------------------------------------------------------------------
 | Guest Routes
@@ -25,6 +25,9 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
+
+
+    Route::resource('budgets', BudgetController::class)->only(['index', 'store', 'destroy']);
 
     /*
     |--------------------------------------------------------------------------
