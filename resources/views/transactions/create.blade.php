@@ -25,7 +25,7 @@
                     </div>
 
                     
-                    <!-- KATEGORI PENGELUARAN - OPSIONAL -->
+                    <!-- KATEGORI PENGELUARAN -->
                     <div id="category-field" style="display: none;">
                         <div class="space-y-3">
                             <label for="category" class="block text-lg font-medium text-gray-300">
@@ -126,6 +126,6 @@
         }
 
         typeSelect.addEventListener('change', toggleCategory);
-        toggleCategory(); // jalankan saat load
+        toggleCategory();
     </script>
 </x-app-layout>

@@ -197,7 +197,7 @@
                 </div>
             </div>
 
-            <!-- Charts dengan skeleton + lazy load -->
+            <!-- Charts  -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="glass-card p-6 lg:col-span-2">
                     <h3 class="text-lg font-semibold text-green-300 mb-4">Pemasukan vs Pengeluaran</h3>
@@ -238,7 +238,7 @@
                 </div>
             </div>
 
-            <!-- Tabel dengan wrapper optimasi scroll -->
+            <!-- Tabel -->
             <div class="glass-card overflow-hidden">
                 <div class="p-6 text-white">
                     <div class="flex justify-between items-center mb-6">
@@ -256,7 +256,7 @@
                 </div>
             </div>
 
-            <!-- Kotak Saran (tetap sama) -->
+            <!-- Kotak Saran -->
             <div class="mt-8 glass-card p-6">
                 <h3 class="text-lg font-medium text-[#e1d5b5] mb-4">Kotak Saran</h3>
                 <form action="{{ route('suggestions.store') }}" method="POST" class="space-y-4">

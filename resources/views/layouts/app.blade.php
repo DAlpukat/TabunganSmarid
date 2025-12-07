@@ -418,12 +418,10 @@
         </div>
 
         <div class="min-h-screen flex flex-col relative">
-            <!-- Navigation - Pastikan z-index tinggi -->
             <div class="z-dropdown">
                 @include('layouts.navigation')
             </div>
 
-            <!-- Page Heading - KEMBALI KE STYLE ASLI -->
             @isset($header)
                 <header class="bg-white dark:bg-gray-800 shadow z-header">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -439,7 +437,6 @@
                 </header>
             @endisset
 
-            <!-- Page Content - Diperbaiki gradient blend -->
             <main class="flex-1 relative py-8 z-main">
                 <!-- Background pattern -->
                 <div class="absolute inset-0 pattern-overlay"></div>
@@ -451,7 +448,6 @@
                 </div>
             </main>
 
-            <!-- Footer - Diperbaiki gradient blend -->
             <footer class="footer-blend border-t border-[rgba(225,213,181,0.3)] mt-auto z-footer">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col md:flex-row justify-between items-center">
@@ -529,9 +525,8 @@
                 runStreakAnimation();
             });
 
-            // Enhanced loading management
+    
             document.addEventListener('DOMContentLoaded', function() {
-                // Hide loading indicator
                 const loadingElement = document.getElementById('loading');
                 if (loadingElement) {
                     setTimeout(() => {

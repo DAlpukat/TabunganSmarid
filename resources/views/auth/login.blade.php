@@ -75,9 +75,8 @@
             text-align: center;
             position: relative;
             z-index: 2;
-            /* YANG INI FIX TOTAL KEPOTONG */
             min-height: 0;
-            max-height: calc(100vh - 40px); /* 20px padding body x2 */
+            max-height: calc(100vh - 40px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -257,7 +256,6 @@
             width: 100%;
         }
 
-        /* RESPONSIF EKSTREM — GAK ADA SCROLL DI KOTAK */
         @media (max-height: 700px) {
             .container {
                 padding: 40px 35px;

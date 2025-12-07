@@ -1,7 +1,6 @@
 <x-app-layout>
     <div class="gradient-bg py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header yang lebih profesional -->
             <div class="glass-card p-8 mb-8 text-center border border-green-500/30">
                 <h1 class="text-4xl font-bold text-green-300 mb-3 flex items-center justify-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,7 +135,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- PESAN GALAK SESUAI REQUEST -->
                                     <div class="text-center py-6 border-t-2 border-gray-700">
                                         @if($remaining == 0)
                                             <p class="text-3xl font-black text-orange-500 animate-pulse tracking-wider">
@@ -176,7 +174,7 @@
                     </div>
                 </div>
 
-                <!-- Ringkasan Bulan Ini (JUGA DIUPDATE GALAK) -->
+                <!-- Ringkasan Bulan Ini -->
                 <div class="lg:col-span-1">
                     <div class="glass-card p-8 sticky top-6 border-4 {{ $totalBudget - $totalSpent >= 0 ? 'border-green-500/50' : 'border-red-600 shadow-2xl shadow-red-500/40' }}">
                         <h2 class="text-3xl font-black text-green-300 mb-8 text-center">
